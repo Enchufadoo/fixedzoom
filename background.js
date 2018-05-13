@@ -14,17 +14,23 @@ const onError = function(error){
 const loadSettings = function(){
     scriptInitialized = true;
     return browser.storage.local.get().then(function(settings){
-        if(!zoomLevel){
+        if(!settings.enabled) {
+            return;
+        }
+         
+        if(!settings.zoomLevel){
             onError('Zoom missing');
             return;
         }        
-        if(zoomLevel < 10 || zoomLevel > 200){
-            onError('Zoom value is invalid ' + zoomLevel);
+        if(settings.zoomLevel < 10 || settings.zoomLevel > 200){
+            onError('Zoom value is invalid ' + settings.zoomLevel);
             return;
         }
 
         enabled = settings.enabled
         zoomLevel = settings.zoomLevel 
+
+        changeZoom();
     });    
 }
 
@@ -34,7 +40,9 @@ const loadSettings = function(){
  * @param {zoomLevel, enabled} settings 
  */
 const changeZoom = function(){
+    console.log(enabled, zoomLevel)
     if(enabled){
+        console.log("changing zoom to", zoomLevel);
         browser.tabs.setZoom(zoomLevel / 100);
     }
 }
@@ -45,7 +53,7 @@ const changeZoom = function(){
  */
 const startScript = function(settings){   
     if(!scriptInitialized){
-        loadSettings().then(changeZoom, onError);
+        loadSettings();
     }else{
         changeZoom();
     }
