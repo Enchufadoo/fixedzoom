@@ -1,28 +1,41 @@
 const LOG_CONST = 'FIXEDZOOM ERROR: '
 
+let scriptInitialized = false;
+let enabled = false;
+let zoomLevel = 100;
+
 const onError = function(error){
     console.log(LOG_CONST, error);
 }
-
+/**
+ * Loads the settings and enables the new zoom 
+ * if the zoom is valid
+ */
 const loadSettings = function(){
-    return browser.storage.local.get();    
+    scriptInitialized = true;
+    return browser.storage.local.get().then(function(settings){
+        if(!zoomLevel){
+            onError('Zoom missing');
+            return;
+        }        
+        if(zoomLevel < 10 || zoomLevel > 200){
+            onError('Zoom value is invalid ' + zoomLevel);
+            return;
+        }
+
+        enabled = settings.enabled
+        zoomLevel = settings.zoomLevel 
+    });    
 }
 
 /**
  * Changes the zoom level based on saved settings
- * if it hasnt been enabled then it won't
+ * 
  * @param {zoomLevel, enabled} settings 
  */
-const changeZoom = function(settings){
-    
-    if(settings && settings.enabled){
-        if(!settings.zoomLevel){
-            onError('Zoom missing');        }
-        if(settings.zoomLevel >= 10 && settings.zoomLevel <= 200){
-            browser.tabs.setZoom(settings.zoomLevel / 100);
-        }else{
-            onError('Zoom value is invalid ' + settings.zoomLevel);
-        }
+const changeZoom = function(){
+    if(enabled){
+        browser.tabs.setZoom(zoomLevel / 100);
     }
 }
 
@@ -30,8 +43,13 @@ const changeZoom = function(settings){
  * Loads the settings and then calls the zoom changing funcion, literally
  * @param {*} settings 
  */
-const startScript = function(settings){    
-    loadSettings().then(changeZoom, onError);
+const startScript = function(settings){   
+    if(!scriptInitialized){
+        loadSettings().then(changeZoom, onError);
+    }else{
+        changeZoom();
+    }
+    
 }
 
 /**
@@ -54,6 +72,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
             startScript();
             break;
         case "settingsSaved":
+            loadSettings();
             notifySettingsSaved();
             break;
 	}
