@@ -1,19 +1,63 @@
-body {
-    font-family: "Roboto", serif;    
-  }
-  
-  .form-gray {
-    font-size: 1.2em;
-    width: 100%;
-    background: #f3f3f3;
-    padding: 20px;      
-    box-sizing: border-box;    
-  }
+.form-gray {
+  font-size: 1.2em;
+  width: 100%;
+  background: #FAFCFF;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
-  .form-gray input{
-    font-size: 0.8em;
-    margin-top: 10px;
-  }
-  
+.form-gray input {
+  font-size: 0.8em;
+  margin-top: 10px;
+}
 
+.disabled-option {
+  pointer-events: none;
+  filter: opacity(50%);
+}
+
+.primary {
+  color: #3498db;
+  border: 1px solid #3498db;
+}
+
+.primary:hover {
+  background-color: #3498db;
+}
+
+button {
+  font-size: 1em;
+  font-family: 'Ropa Sans', sans-serif;
+  background-color: white;
+  padding: 10px 20px;
+  display: inline-block;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  /*   text-transform: uppercase; */
+  transition: all .2s linear;
+  -o-transition: all .2s linear;
+  -moz-transition: all .2s linear;
+  -webkit-transition: all .2s linear;
+}
+
+button:hover {
+  color: white;
+}
+
+.zoomSector{
+  display: table-cell;
+  vertical-align: middle;
+  height: 50px;
   
+}
+
+#zoomLevel{
+  vertical-align:middle;
+}
+
+#zoomLevelLbl{
+  display: inline-block;
+  min-width: 30px;
+  width: 30px;
+  vertical-align:middle;
+}

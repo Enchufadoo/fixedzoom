@@ -16,14 +16,27 @@
         <input id="enabled" type="checkbox" />
       </label>
     </div>
-    <div>
-      <label>
-        Zoom Level
-        <input id="zoomLevel" type="text" value='100' />
-      </label>
+    <div class="zoomSector">
+        
+        <input
+            type="range"
+            name="participants"
+            min="25"
+            max="200"
+            value="100"
+            id="zoomLevel"
+        >  
+        <span id="zoomLevelLbl"></span>
     </div>
-    <br />
-    <button type="submit">Save Settings</button>
+    
+    
+      
+    
+    <hr />
+    <div class="saveSector">
+      <button class="primary" type="submit">Save Settings</button>
+    </div>
+    
   </form>
 
   <script src="options.js"></script>

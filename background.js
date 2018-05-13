@@ -40,9 +40,7 @@ const loadSettings = function(){
  * @param {zoomLevel, enabled} settings 
  */
 const changeZoom = function(){
-    console.log(enabled, zoomLevel)
     if(enabled){
-        console.log("changing zoom to", zoomLevel);
         browser.tabs.setZoom(zoomLevel / 100);
     }
 }
