@@ -1,0 +1,19 @@
+body {
+    font-family: "Roboto", serif;    
+  }
+  
+  .form-gray {
+    font-size: 1.2em;
+    width: 100%;
+    background: #f3f3f3;
+    padding: 20px;      
+    box-sizing: border-box;    
+  }
+
+  .form-gray input{
+    font-size: 0.8em;
+    margin-top: 10px;
+  }
+  
+
+  
