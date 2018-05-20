@@ -1,47 +1,37 @@
 {
-
   "description": "Extension that sets a default fixed zoom for all pages in Firefox",
   "manifest_version": 2,
   "name": "Fixed Zoom",
-  
+
   "version": "1.2.2",
   "homepage_url": "https://github.com/Enchufadoo/fixedzoom",
   "icons": {
     "64": "icons/binoculars.png"
   },
-  "applications": {
-    "gecko": {
-      "id": "fixedzoom@enchufado.com"
-    }
-  },
   "background": {
-		"scripts": [
-			"background.js"  
-		]
+    "scripts": [
+      "background.js"
+    ]
   },
   "permissions": [
     "storage",
     "notifications"
   ],
-  "content_scripts": [
-    {
-      "run_at": "document_start",
-      "match_about_blank": false,
-      "matches": ["<all_urls>"],
-      "js": ["fixedzoom.js"]
-    }
-  ],
+  "content_scripts": [{
+    "run_at": "document_start",
+    "match_about_blank": false,
+    "matches": ["<all_urls>"],
+    "js": ["fixedzoom.js"]
+  }],
   "browser_action": {
     "default_icon": "icons/binoculars.png",
     "default_title": "Fixed Zoom",
     "default_popup": "options/options.html",
-    "browser_style": false 
+    "browser_style": false
   },
-
-
   "options_ui": {
     "page": "options/options.html",
-    "browser_style": false 
-  }
-
+    "browser_style": false
+  },
+  "default_locale": "en"
 }

@@ -1,0 +1,19 @@
+{
+	"extensionName": {
+		"message": "Zoom Fijo",
+		"description": "Nombre de la extensión"
+	},
+	"extensionDescription": {
+		"message": "Extensión que establece un zoom por defecto para todas las páginas en Firefox.",
+		"description": "Descripción de la extensión"
+	},
+	"optionEnabledLabel": {
+		"message": "Habilitado",
+		"description": "Estado de la extensión"
+	},
+	"saveSettingsButton": {
+		"message": "Guardar los Cambios",
+		"description": "Guarda las opciones de la estensión"
+	}	
+	
+}

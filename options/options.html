@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="options.css"/>
+  
 </head>
 
 <body>
 
   <form class="form-gray">
     <div>
-      <label>
-        Enabled
+      <label data-i18n="optionEnabledLabel">
         <input id="enabled" type="checkbox" />
       </label>
     </div>
@@ -34,13 +34,13 @@
     
     <hr />
     <div class="saveSector">
-      <button class="primary" type="submit">Save Settings</button>
+      <button data-i18n="saveSettingsButton" class="primary" type="submit"></button>
     </div>
     
   </form>
 
   <script src="options.js"></script>
-
+  <script src="../internationalization.js"></script>
 </body>
 
 </html>
