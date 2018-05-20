@@ -1,7 +1,8 @@
 let enabledCb = document.querySelector("#enabled");
 let zoomLevelBtn = document.querySelector("#zoomLevel");
+
 /**
- * Enable or disable the zoom input based on enabled status
+ * Enable or disable the zoom input and change the zoom percentage
  * @param {boolean} status 
  */
 const updateUi = function (status) {
@@ -11,11 +12,13 @@ const updateUi = function (status) {
   } else {
     zoomSector.classList.add('disabled-option');
   }
-
   document.querySelector("#zoomLevelLbl").innerHTML = zoomLevelBtn.value + "%"
-
 }
 
+const updateUiFromForm = function(){
+  let status = enabledCb.checked;
+  updateUi(status);
+}
 
 /**
  * Saves everything in the local storage
@@ -23,7 +26,6 @@ const updateUi = function (status) {
  * @param {*} e 
  */
 function saveOptions(e) {
-  console.log("llegue a save options");
   e.preventDefault();
   browser.storage.local.set({
     enabled: document.querySelector("#enabled").checked,
@@ -32,7 +34,6 @@ function saveOptions(e) {
     browser.runtime.sendMessage({
       method: "startFixedZoom",
     });
-
     browser.runtime.sendMessage({
       method: "settingsSaved",
     });
@@ -43,7 +44,6 @@ function saveOptions(e) {
  * Loads saved and default settings in the options panel
  */
 function restoreOptions() {
-
   function setCurrentChoice(result) {
     let status = result.enabled || false;
     document.querySelector("#zoomLevel").value = result.zoomLevel || "100";
@@ -60,21 +60,11 @@ function restoreOptions() {
 }
 
 /**
- * Enabled checkbox changes updates the ui
+ * Changes in form updates the ui
  */
-enabledCb.addEventListener('click', function (event) {
-
-  let status = enabledCb.checked;
-  updateUi(status);
-});
-
-/**
- * Range input change event updates the ui
- */
-zoomLevelBtn.addEventListener('change', function (event) {
-  let status = enabledCb.checked;
-  updateUi(status);
-});
+enabledCb.addEventListener('click', updateUiFromForm);
+zoomLevelBtn.addEventListener('change', updateUiFromForm);
+zoomLevelBtn.addEventListener('input', updateUiFromForm);
 
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
