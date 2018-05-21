@@ -1,9 +1,9 @@
 {
-  "description": "Extension that sets a default fixed zoom for all pages in Firefox",
+  "description": "Extension that sets a default fixed zoom for all pag.1es in Firefox",
   "manifest_version": 2,
   "name": "Fixed Zoom",
 
-  "version": "1.2.2",
+  "version": "1.3.1",
   "homepage_url": "https://github.com/Enchufadoo/fixedzoom",
   "icons": {
     "64": "icons/binoculars.png"

@@ -12,6 +12,7 @@ const onError = function(error){
  * if the zoom is valid
  */
 const loadSettings = function(){
+    
     scriptInitialized = true;
     return browser.storage.local.get().then(function(settings){
         if(!settings.enabled) {
@@ -39,9 +40,14 @@ const loadSettings = function(){
  * 
  * @param {zoomLevel, enabled} settings 
  */
-const changeZoom = function(){
+const changeZoom = function(tabId){
     if(enabled){
-        browser.tabs.setZoom(zoomLevel / 100);
+        if(tabId){
+            browser.tabs.setZoom(tabId, zoomLevel / 100);
+        }else{
+            browser.tabs.setZoom(zoomLevel / 100);
+        }
+            
     }
 }
 
@@ -83,3 +89,13 @@ browser.runtime.onMessage.addListener((message, sender) => {
             break;
 	}
 });
+
+/**
+ * When a new tab is created the  browser.tabs.setZoom will act on the current tab not on the one created
+ * so I have to do this, this will trigger 3 times the script
+ * 1 for the new tab being created, 1 for the url of the new tab
+ * and 1 for this event, don't know how to fix it yet.
+ */
+browser.tabs.onCreated.addListener(function(tab){
+    changeZoom(tab.id)
+})
