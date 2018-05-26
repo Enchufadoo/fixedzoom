@@ -1,6 +1,6 @@
 {
 	"extensionName": {
-		"message": "Zoom Fijo",
+		"message": "Fixed Zoom",
 		"description": "Nombre de la extensión"
 	},
 	"extensionDescription": {
@@ -13,7 +13,7 @@
 	},
 	"saveSettingsButton": {
 		"message": "Guardar los Cambios",
-		"description": "Guarda las opciones de la estensión"
+		"description": "Guarda las opciones de la extensión"
 	}	
 	
 }
