@@ -1,5 +1,5 @@
 {
-  "description": "Extension that sets a default fixed zoom for all pag.1es in Firefox",
+  "description": "Extension that sets a default fixed zoom for all pages in Firefox",
   "manifest_version": 2,
   "name": "Fixed Zoom",
 

@@ -1,5 +1,5 @@
-const LOG_CONST = 'FIXEDZOOM ERROR: '
-
+const LOG_CONST = 'FIXEDZOOM ERROR: ';
+const NOTIFICATION_DURATION = 1500;
 let scriptInitialized = false;
 let enabled = false;
 let zoomLevel = 100;
@@ -43,11 +43,19 @@ const loadSettings = function(){
 const changeZoom = function(tabId){
     if(enabled){
         if(tabId){
+            /**
+             * I do this twice because if there's a saved zoom for a webpage
+             * the browser after allowing the new zoom change
+             * will fallback to that saved zoom right after,
+             * I hope 1000ms will work everywhere, but probably won't
+             */
             browser.tabs.setZoom(tabId, zoomLevel / 100);
+            setTimeout(() => {
+                browser.tabs.setZoom(tabId, zoomLevel / 100);
+            }, 1000)
         }else{
             browser.tabs.setZoom(zoomLevel / 100);
-        }
-            
+        }            
     }
 }
 
@@ -60,8 +68,7 @@ const startScript = function(settings){
         loadSettings();
     }else{
         changeZoom();
-    }
-    
+    }    
 }
 
 /**
@@ -72,11 +79,14 @@ const notifySettingsSaved = function(){
         "type": "basic",
         "title": "Settings Saved",
         "message": "Fixed zoom settings saved",
-        "iconUrl": "icons/binoculars.png"
-      });
+        "iconUrl": "icons/binoculars.png",
+        "priority": 1
+      }).then(function(n){
+        setTimeout(() => {
+            browser.notifications.clear(n);
+        }, NOTIFICATION_DURATION);        
+      });     
 }
-
-
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
@@ -92,10 +102,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
 
 /**
  * When a new tab is created the  browser.tabs.setZoom will act on the current tab not on the one created
- * so I have to do this, this will trigger 3 times the script
- * 1 for the new tab being created, 1 for the url of the new tab
- * and 1 for this event, don't know how to fix it yet.
+ * so I have to do this
  */
 browser.tabs.onCreated.addListener(function(tab){
-    changeZoom(tab.id)
+    changeZoom(tab.id);
 })
