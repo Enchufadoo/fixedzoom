@@ -52,7 +52,7 @@ const changeZoom = function(tabId){
             browser.tabs.setZoom(tabId, zoomLevel / 100);
             setTimeout(() => {
                 browser.tabs.setZoom(tabId, zoomLevel / 100);
-            }, 1000)
+            }, 1500)
         }else{
             browser.tabs.setZoom(zoomLevel / 100);
         }            
@@ -99,6 +99,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
             break;
 	}
 });
+
 
 /**
  * When a new tab is created the  browser.tabs.setZoom will act on the current tab not on the one created
