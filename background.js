@@ -23,7 +23,7 @@ const loadSettings = function(){
             onError('Zoom missing');
             return;
         }        
-        if(settings.zoomLevel < 10 || settings.zoomLevel > 200){
+        if(settings.zoomLevel < 10 || settings.zoomLevel > 300){
             onError('Zoom value is invalid ' + settings.zoomLevel);
             return;
         }
