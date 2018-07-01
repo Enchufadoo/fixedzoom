@@ -1,6 +1,11 @@
+body,
+html {
+  width: 450px;
+}
+
 .form-gray {
   font-size: 1.2em;
-  
+  width: 450px;
   background: #FAFCFF;
   padding: 20px;
   box-sizing: border-box;
