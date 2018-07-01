@@ -4,11 +4,16 @@
   background: #FAFCFF;
   padding: 20px;
   box-sizing: border-box;
+  max-width: 400px;
 }
 
 .form-gray input {
   font-size: 0.8em;
   margin-top: 10px;
+}
+
+#zoomLevel{
+  width: 300px;
 }
 
 .disabled-option {
