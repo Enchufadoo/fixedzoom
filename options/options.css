@@ -1,11 +1,12 @@
-body,
 html {
-  width: 450px;
+  width: 100%;
+  max-width: 450px;
 }
 
 .form-gray {
   font-size: 1.2em;
-  width: 450px;
+  width: 100%;
+  max-width: 450px;
   background: #FAFCFF;
   padding: 20px;
   box-sizing: border-box;
@@ -18,7 +19,7 @@ html {
 }
 
 #zoomLevel{
-  width: 300px;
+  width: 100%;
 }
 
 .disabled-option {
@@ -49,18 +50,6 @@ button {
   -o-transition: all .2s linear;
   -moz-transition: all .2s linear;
   -webkit-transition: all .2s linear;
-}
-
-
-.zoomSector{
-  display: table-cell;
-  vertical-align: middle;
-  height: 50px;
-  
-}
-
-#zoomLevel{
-  vertical-align:middle;
 }
 
 #buttonsContainer{
