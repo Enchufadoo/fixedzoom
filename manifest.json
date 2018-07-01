@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "Fixed Zoom",
 
-  "version": "1.3.2",
+  "version": "1.3.4",
   "homepage_url": "https://github.com/Enchufadoo/fixedzoom",
   "icons": {
     "64": "icons/binoculars.png"

@@ -4,8 +4,8 @@
 
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="options.css"/>
-  
+  <link rel="stylesheet" href="options.css" />
+
 </head>
 
 <body>
@@ -17,26 +17,25 @@
       </label>
     </div>
     <div class="zoomSector">
-        
-        <input
-            type="range"
-            name="participants"
-            min="25"
-            max="300"
-            value="100"
-            id="zoomLevel"
-        >  
-        <span id="zoomLevelLbl"></span>
+
+      <input type="range"  min="25" max="300" value="100" id="zoomLevel" step="1">
+      <div id="buttonsContainer">
+        <div style="flex: 0">
+          <button id="lessButton" class="zoomButton primary"></button>
+        </div>
+        <span id="zoomLevelLbl" style="flex: 1"></span>
+        <div style="flex: 0">
+          <button id="plusButton" class="zoomButton primary"></button>
+        </div>
+      </div>
+
     </div>
-    
-    
-      
     
     <hr />
     <div class="saveSector">
       <button data-i18n="saveSettingsButton" class="primary" type="submit"></button>
     </div>
-    
+
   </form>
 
   <script src="options.js"></script>

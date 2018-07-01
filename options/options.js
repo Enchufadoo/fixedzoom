@@ -1,5 +1,8 @@
+const ZOOM_BTN_STEP = 5;
 let enabledCb = document.querySelector("#enabled");
 let zoomLevelBtn = document.querySelector("#zoomLevel");
+let plusBtn = document.querySelector("#plusButton");
+let lessBtn = document.querySelector("#lessButton");
 
 /**
  * Enable or disable the zoom input and change the zoom percentage
@@ -59,13 +62,38 @@ function restoreOptions() {
   getting.then(setCurrentChoice, onError);
 }
 
+
+/**
+ * Adds more zoom with the buttons
+ * @param {*} event 
+ */
+function moreZoom(event){
+  event.preventDefault();
+  let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
+  if(value % 5) value -= value % 5;
+  zoomLevelBtn.value = value + ZOOM_BTN_STEP;
+  updateUiFromForm();
+}
+/**
+ * Substracts zoom with the buttons
+ * @param {*} event 
+ */
+function lessZoom(event) {
+  event.preventDefault();
+  let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
+  if (value % 5) value -= value % 5 - ZOOM_BTN_STEP;
+  zoomLevelBtn.value = value - ZOOM_BTN_STEP;
+  updateUiFromForm();
+}
+
 /**
  * Changes in form updates the ui
  */
 enabledCb.addEventListener('click', updateUiFromForm);
 zoomLevelBtn.addEventListener('change', updateUiFromForm);
 zoomLevelBtn.addEventListener('input', updateUiFromForm);
-
+plusBtn.addEventListener("click", moreZoom);
+lessBtn.addEventListener("click", lessZoom);
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);

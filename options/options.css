@@ -23,6 +23,7 @@
 
 .primary:hover {
   background-color: #3498db;
+  color: white;
 }
 
 button {
@@ -40,9 +41,6 @@ button {
   -webkit-transition: all .2s linear;
 }
 
-button:hover {
-  color: white;
-}
 
 .zoomSector{
   display: table-cell;
@@ -55,9 +53,56 @@ button:hover {
   vertical-align:middle;
 }
 
+#buttonsContainer{
+  display: flex;
+}
+
 #zoomLevelLbl{
+  flex: 1;
   display: inline-block;
   min-width: 30px;
-  width: 30px;
+  width: 100%;
+  text-align: center;
   vertical-align:middle;
+  font-size: 24px;
+}
+
+.zoomButton{
+  transition: all .2s linear;
+  background-color: #fff;
+  font-size: 8px;
+  position: relative;
+}
+
+.zoomButton:after,
+.zoomButton:before {
+  transition: all .2s linear;
+  content: "";
+  display: block;
+  background-color:#3498db;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.zoomButton:hover:after,
+.zoomButton:hover:before {
+  transition: all .2s linear;
+  background-color: white;
+}
+
+#plusButton:before {
+  height: 1em;
+  width: 0.2em;
+}
+
+#plusButton:after {
+  height: 0.2em;
+  width: 1em;
+}
+
+#lessButton:after {
+  height: 0.2em;
+  width: 1em;
 }
