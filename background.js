@@ -1,6 +1,5 @@
 const LOG_CONST = 'FIXEDZOOM ERROR: ';
 const NOTIFICATION_DURATION = 1500;
-let scriptInitialized = false;
 let enabled = false;
 let zoomLevel = 100;
 
@@ -12,8 +11,6 @@ const onError = function(error){
  * if the zoom is valid
  */
 const loadSettings = function(){
-    
-    scriptInitialized = true;
     return browser.storage.local.get().then(function(settings){
          
         if(!settings.zoomLevel){
@@ -25,11 +22,9 @@ const loadSettings = function(){
             return;
         }
 
-        enabled = settings.enabled
-        zoomLevel = settings.zoomLevel 
-
-        changeZoom();
-    });    
+        enabled = settings.enabled;
+        zoomLevel = settings.zoomLevel;
+    });
 }
 
 /**
@@ -57,18 +52,6 @@ const changeZoom = function(tabId){
 }
 
 /**
- * Loads the settings and then calls the zoom changing funcion, literally
- * @param {*} settings 
- */
-const startScript = function(settings){   
-    if(!scriptInitialized){
-        loadSettings();
-    }else{
-        changeZoom();
-    }    
-}
-
-/**
  * Small popup indicating settings were saved
  */
 const notifySettingsSaved = function(){    
@@ -87,21 +70,17 @@ const notifySettingsSaved = function(){
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
-		case "startFixedZoom":
-            startScript();
-            break;
         case "settingsSaved":
-            loadSettings();
-            notifySettingsSaved();
+            loadSettings().then(function(){
+                changeZoomInAllTabs();  
+                notifySettingsSaved();
+            });
             break;
 	}
 });
 
-
-/**
- * When a new tab is created the  browser.tabs.setZoom will act on the current tab not on the one created
- * so I have to do this
- */
-browser.tabs.onCreated.addListener(function(tab){
-    changeZoom(tab.id);
+browser.tabs.onUpdated.addListener(function(tabId, info, tab){
+    if (info.status === 'complete') {
+        changeZoomInTabs([tab]);
+    }
 })

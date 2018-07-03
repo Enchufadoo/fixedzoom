@@ -35,9 +35,6 @@ function saveOptions(e) {
     zoomLevel: document.querySelector("#zoomLevel").value
   }).then(function () {
     browser.runtime.sendMessage({
-      method: "startFixedZoom",
-    });
-    browser.runtime.sendMessage({
       method: "settingsSaved",
     });
   });
