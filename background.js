@@ -15,9 +15,6 @@ const loadSettings = function(){
     
     scriptInitialized = true;
     return browser.storage.local.get().then(function(settings){
-        if(!settings.enabled) {
-            return;
-        }
          
         if(!settings.zoomLevel){
             onError('Zoom missing');
