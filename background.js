@@ -51,6 +51,18 @@ const changeZoom = function(tabId){
     }
 }
 
+const changeZoomInAllTabs = function() {
+    var querying = browser.tabs.query({});
+    
+    querying.then(changeZoomInTabs, onError);
+}
+
+const tabUpdateListener = function(tabId, info, tab) {
+    if (info.status === 'complete') {
+        changeZoomInTabs([tab]);
+    }
+}
+
 /**
  * Small popup indicating settings were saved
  */
@@ -65,22 +77,29 @@ const notifySettingsSaved = function(){
         setTimeout(() => {
             browser.notifications.clear(n);
         }, NOTIFICATION_DURATION);        
-      });     
+      });
 }
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
         case "settingsSaved":
             loadSettings().then(function(){
-                changeZoomInAllTabs();  
+                changeZoomInAllTabs();
+                
+                if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
+                    if (!enabled) {
+                        // actually remove the listener to remove any overhead
+                        browser.tabs.onUpdated.removeListener(tabUpdateListener);
+                    }
+                }
+                else {
+                    if (enabled) {
+                        browser.tabs.onUpdated.addListener(tabUpdateListener);
+                    }
+                }
+                
                 notifySettingsSaved();
             });
             break;
 	}
 });
-
-browser.tabs.onUpdated.addListener(function(tabId, info, tab){
-    if (info.status === 'complete') {
-        changeZoomInTabs([tab]);
-    }
-})
