@@ -28,26 +28,17 @@ const loadSettings = function(){
 }
 
 /**
- * Changes the zoom level based on saved settings
+ * Changes the zoom level on the given tabs based on saved settings.
  * 
  * @param {zoomLevel, enabled} settings 
  */
-const changeZoom = function(tabId){
-    if(enabled){
-        if(tabId){
-            /**
-             * I do this twice because if there's a saved zoom for a webpage
-             * the browser after allowing the new zoom change
-             * will fallback to that saved zoom right after,
-             * I hope 1000ms will work everywhere, but probably won't
-             */
-            browser.tabs.setZoom(tabId, zoomLevel / 100);
-            setTimeout(() => {
-                browser.tabs.setZoom(tabId, zoomLevel / 100);
-            }, 1500)
-        }else{
-            browser.tabs.setZoom(zoomLevel / 100);
-        }            
+const changeZoomInTabs = function(tabs) {
+    for (let tab of tabs) {
+        if(enabled){
+            browser.tabs.setZoom(tab.id, zoomLevel / 100);
+        } else {
+            browser.tabs.setZoom(tab.id, 1);
+        }
     }
 }
 
