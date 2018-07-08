@@ -1,6 +1,5 @@
 const LOG_CONST = 'FIXEDZOOM ERROR: ';
 const NOTIFICATION_DURATION = 1500;
-let scriptInitialized = false;
 let enabled = false;
 let zoomLevel = 100;
 
@@ -12,12 +11,7 @@ const onError = function(error){
  * if the zoom is valid
  */
 const loadSettings = function(){
-    
-    scriptInitialized = true;
     return browser.storage.local.get().then(function(settings){
-        if(!settings.enabled) {
-            return;
-        }
          
         if(!settings.zoomLevel){
             onError('Zoom missing');
@@ -28,47 +22,36 @@ const loadSettings = function(){
             return;
         }
 
-        enabled = settings.enabled
-        zoomLevel = settings.zoomLevel 
-
-        changeZoom();
-    });    
+        enabled = settings.enabled;
+        zoomLevel = settings.zoomLevel;
+    });
 }
 
 /**
- * Changes the zoom level based on saved settings
+ * Changes the zoom level on the given tabs based on saved settings.
  * 
  * @param {zoomLevel, enabled} settings 
  */
-const changeZoom = function(tabId){
-    if(enabled){
-        if(tabId){
-            /**
-             * I do this twice because if there's a saved zoom for a webpage
-             * the browser after allowing the new zoom change
-             * will fallback to that saved zoom right after,
-             * I hope 1000ms will work everywhere, but probably won't
-             */
-            browser.tabs.setZoom(tabId, zoomLevel / 100);
-            setTimeout(() => {
-                browser.tabs.setZoom(tabId, zoomLevel / 100);
-            }, 1500)
-        }else{
-            browser.tabs.setZoom(zoomLevel / 100);
-        }            
+const changeZoomInTabs = function(tabs) {
+    for (let tab of tabs) {
+        if(enabled){
+            browser.tabs.setZoom(tab.id, zoomLevel / 100);
+        } else {
+            browser.tabs.setZoom(tab.id, 1);
+        }
     }
 }
 
-/**
- * Loads the settings and then calls the zoom changing funcion, literally
- * @param {*} settings 
- */
-const startScript = function(settings){   
-    if(!scriptInitialized){
-        loadSettings();
-    }else{
-        changeZoom();
-    }    
+const changeZoomInAllTabs = function() {
+    var querying = browser.tabs.query({});
+    
+    querying.then(changeZoomInTabs, onError);
+}
+
+const tabUpdateListener = function(tabId, info, tab) {
+    if (info.status === 'complete') {
+        changeZoomInTabs([tab]);
+    }
 }
 
 /**
@@ -85,26 +68,29 @@ const notifySettingsSaved = function(){
         setTimeout(() => {
             browser.notifications.clear(n);
         }, NOTIFICATION_DURATION);        
-      });     
+      });
 }
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
-		case "startFixedZoom":
-            startScript();
-            break;
         case "settingsSaved":
-            loadSettings();
-            notifySettingsSaved();
+            loadSettings().then(function(){
+                changeZoomInAllTabs();
+                
+                if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
+                    if (!enabled) {
+                        // actually remove the listener to remove any overhead
+                        browser.tabs.onUpdated.removeListener(tabUpdateListener);
+                    }
+                }
+                else {
+                    if (enabled) {
+                        browser.tabs.onUpdated.addListener(tabUpdateListener);
+                    }
+                }
+                
+                notifySettingsSaved();
+            });
             break;
 	}
 });
-
-
-/**
- * When a new tab is created the  browser.tabs.setZoom will act on the current tab not on the one created
- * so I have to do this
- */
-browser.tabs.onCreated.addListener(function(tab){
-    changeZoom(tab.id);
-})
