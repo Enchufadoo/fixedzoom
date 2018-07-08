@@ -49,6 +49,7 @@ const changeZoomInAllTabs = function() {
 }
 
 const tabUpdateListener = function(tabId, info, tab) {
+    changeZoomInTabs([tab]);
     if (info.status === 'complete') {
         changeZoomInTabs([tab]);
     }
