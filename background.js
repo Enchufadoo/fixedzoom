@@ -73,35 +73,32 @@ const notifySettingsSaved = function(){
 }
 
 /**
- * Loads the settings and then calls the zoom changing funcion, literally
- * @param {*} settings 
+ * After the settings have been load, update the tabs zoom
  */
-const startScript = function (settings) {
-    if (!scriptInitialized) {
-        loadSettings();
-    } 
+const enableSettings= function(){
+    changeZoomInAllTabs();
+    if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
+        if (!enabled) {
+            // actually remove the listener to remove any overhead
+            browser.tabs.onUpdated.removeListener(tabUpdateListener);
+        }
+    } else {
+        if (enabled) {
+            browser.tabs.onUpdated.addListener(tabUpdateListener);
+        }
+    }
 }
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
         case "startFixedZoom":
-            startScript();
+            loadSettings().then(function () {
+                enableSettings();
+            });
             break;
         case "settingsSaved":
             loadSettings().then(function(){
-                changeZoomInAllTabs();
-                if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
-                    if (!enabled) {
-                        // actually remove the listener to remove any overhead
-                        browser.tabs.onUpdated.removeListener(tabUpdateListener);
-                    }
-                }
-                else {
-                    if (enabled) {
-                        browser.tabs.onUpdated.addListener(tabUpdateListener);
-                    }
-                }
-                
+                enableSettings();                
                 notifySettingsSaved();
             });
             break;
