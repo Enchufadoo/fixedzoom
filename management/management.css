@@ -1,0 +1,153 @@
+.container{
+    height: 100vh;
+    background-color: rgba(199,199,199, 0.2);
+    padding: 40px 28px;
+}
+
+button{
+    margin: 0;
+}
+
+.basicSep{
+  margin-bottom: 4px;
+}
+.longSep{
+    margin-top: 20px;
+}
+
+.miniHeader{
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.domainExample{
+    color: grey;
+}
+
+.buttonBox{
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+#zoomControlsContainer{
+  display: flex;
+  justify-content: space-between;
+  
+}
+
+#zoomLevelCont{
+  line-height: 35px;
+}
+
+#newSiteContainer{
+  max-width: 300px;
+}
+
+
+.zoomButton{
+  font-family: 'Ropa Sans', sans-serif;
+  min-height: 20px;
+  min-width: 40px;
+  background-color: white;
+  paddding: 10px 20px;
+  display: inline-block;
+  border-radius: 2px!important;
+  transition:  l .2s linear;
+  background-color: #fff!important;
+  font-size: 8px;
+  position: relative;
+  color: #3498db!important;   
+  border: 1px solid #3498db!important;
+}
+
+.zoomButton:hover{
+  background-color: #3498db;
+  color: white;
+}
+
+
+.zoomButton:after,
+.zoomButton:before {
+  transition: all .2s linear;
+  content: "";
+  display: block;
+  background-color:#3498db;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.zoomButton:hover:after,
+.zoomButton:hover:before {
+  transition: all .2s linear;
+  background-color: white;
+}
+
+#plusButton:before {
+  height: 1em;
+  width: 0.2em;
+}
+
+#plusButton:after {
+  height: 0.2em;
+  width: 1em;
+}
+
+#lessButton:after {
+  height: 0.2em;
+  width: 1em;
+}
+
+#domainName{
+  width: 100%;
+}
+
+#noRulesCreated{
+  background: white;
+  padding: 10px 10px;
+  width: 300px;
+}
+
+.savedSite{
+  display: flex;
+  margin: 4px 0;
+}
+
+.flexZero{
+  flex: 0;
+}
+
+.flexOne {
+  flex: 1;
+}
+
+.removeIcon{
+  width: 13px;
+  height: 13px;
+}
+
+.removeIconDiv{
+  margin-left: 8px;
+}
+
+#sitesList{
+  max-width: 400px;
+}
+
+.hide{
+  display: none;
+}
+
+.disabledOption {
+  pointer-events: none;
+  filter: opacity(50%);
+}
+
+.errorInput{
+  border-color: red!important;
+}
+
+.validInput{
+  border-color: green !important;
+}

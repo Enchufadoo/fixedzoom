@@ -5,33 +5,42 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="options.css" />
-
+  <!-- <link rel="stylesheet" href="chrome://browser/content/extension.css" />
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" /> -->
 </head>
 
 <body>
-
   <form class="form-gray">
     <div>
-      <label data-i18n="optionEnabledLabel" title="Unchecking and saving sets all open tabs' zoom level to 100%">
+      <div class="littleHeader">
+        Browser Custom Zoom
+      </div>
+      <label id="enabledLabel" data-i18n="optionEnabledLabel" title="Unchecking and saving sets all open tabs' zoom level to 100%">
         <input id="enabled" type="checkbox" />
       </label>
     </div>
     <div class="zoomSector">
-      <input type="range"  min="25" max="300" value="100" id="zoomLevel" step="1">
+      <input type="range" min="25" max="300" value="100" id="zoomLevel" step="1">
       <div id="buttonsContainer">
         <div style="flex: 0">
-          <button id="lessButton" class="zoomButton primary"></button>
+          <button id="lessButton" class="button zoomButton primary"></button>
         </div>
         <span id="zoomLevelLbl" style="flex: 1"></span>
         <div style="flex: 0">
-          <button id="plusButton" class="zoomButton primary"></button>
+          <button id="plusButton" class="button zoomButton primary"></button>
         </div>
       </div>
+      <div class="zoomRules">
+        <div class="littleHeader">
+          Zoom Rules by Site
+        </div>
+        <a id="manageBtn" role="button" class="link" title="Manage Rules">Manage Rules</a>
+      </div>
     </div>
-    <hr />
     <div class="saveSector">
-      <button data-i18n="saveSettingsButton" class="primary" type="submit"></button>
+      <button data-i18n="saveSettingsButton" class="button primary" type="submit"></button>
     </div>
+
 
   </form>
 
