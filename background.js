@@ -74,6 +74,11 @@ const notifySettingsSaved = function(){
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
+        case "openSiteRulesManagement":
+            browser.tabs.create({
+                "url": "/management/management.html"
+            });
+            break;
         case "settingsSaved":
             loadSettings().then(function(){
                 changeZoomInAllTabs();

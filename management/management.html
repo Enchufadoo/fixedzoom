@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Fixed Zoom Rules by Site</title>
+  <link rel="stylesheet" href="chrome://browser/content/extension.css" />
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
+  <link rel="stylesheet" href="management.css" />
+</head>
+
+<body>
+  <div class="container">
+    <label class="header-name">Fixed Zoom Rules by Site</label>
+    <div class="longSep">
+      <div class="miniHeader">
+        Create a different zoom level for a website
+      </div>
+      To set a specific zoom for a website, enter the site's domain name (such as
+      <br />
+      <span class="domainExample">yahoo.com</span>), pick a custom zoom to your liking and click on "add a new rule".
+    </div>
+
+    <div class="longSep" id="newSiteContainer">
+      <div class="basicSep">
+        <input id="domainName" type="text" placeholder="Enter the domain name" />
+      </div>
+      <div class="zoomSector">
+        <div id="zoomControlsContainer">
+          <div style="flex: 0">
+            <button id="lessButton" class="button zoomButton"></button>
+          </div>
+          <div id="zoomLevelCont" style="flex: 0">
+            <input type="range" min="25" max="300" value="100" id="zoomLevel" step="1">
+          </div>
+          <div style="flex: 0">
+            <button id="plusButton" class="button zoomButton"></button>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: -15px">
+          <span id="zoomLevelLbl">100%</span>
+        </div>
+        <div class="longSep">
+          <button id="addNewRule" class="accessory-button primary">
+            <span class="buttonBox">Add a new rule</span>
+          </buttton>
+        </div>
+      </div>
+    </div>
+    <div class="longSep" id="sitesListContainer">
+      <div class="miniHeader">
+        List of created rules  
+
+      </div>      
+      <div class="basicSep" id="sitesList"></div>
+    </div>
+  </div>
+<script src="management.js"></script>
+</body>
+
+</html>

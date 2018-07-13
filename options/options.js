@@ -3,6 +3,7 @@ let enabledCb = document.querySelector("#enabled");
 let zoomLevelBtn = document.querySelector("#zoomLevel");
 let plusBtn = document.querySelector("#plusButton");
 let lessBtn = document.querySelector("#lessButton");
+let manageBtn = document.querySelector("#manageBtn");
 
 /**
  * Enable or disable the zoom input and change the zoom percentage
@@ -82,6 +83,16 @@ function lessZoom(event) {
   zoomLevelBtn.value = value - ZOOM_BTN_STEP;
   updateUiFromForm();
 }
+/**
+ * Opens the administration of per site zoom rules
+ * @param {*} event 
+ */
+function openSiteManagement(event){
+  event.preventDefault();
+  browser.runtime.sendMessage({
+    method: "openSiteRulesManagement",
+  });
+}
 
 /**
  * Changes in form updates the ui
@@ -91,6 +102,7 @@ zoomLevelBtn.addEventListener('change', updateUiFromForm);
 zoomLevelBtn.addEventListener('input', updateUiFromForm);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
+manageBtn.addEventListener("click", openSiteManagement);
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);

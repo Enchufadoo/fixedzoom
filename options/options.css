@@ -1,6 +1,24 @@
 html {
   width: 100%;
-  max-width: 450px;
+  font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif; 
+}
+
+.zoomRules{
+  margin-top: 16px;
+  font-size: 17px;
+  margin-bottom: 16px;
+}
+
+.littleHeader{
+  font-size: 13px;
+  color: #737373;
+  margin-bottom: 4px;
+}
+
+a.link{
+  text-decoration: none;
+  color: #0a84ff;
+  cursor: default;
 }
 
 .form-gray {
@@ -37,7 +55,7 @@ html {
   color: white;
 }
 
-button {
+.button {
   font-size: 1em;
   font-family: 'Ropa Sans', sans-serif;
   background-color: white;
@@ -57,13 +75,14 @@ button {
 }
 
 #zoomLevelLbl{
+  
   flex: 1;
   display: inline-block;
   min-width: 30px;
   width: 100%;
   text-align: center;
   vertical-align:middle;
-  font-size: 24px;
+  font-size: 22px;
 }
 
 .zoomButton{
