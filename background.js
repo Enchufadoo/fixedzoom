@@ -2,6 +2,7 @@ const LOG_CONST = 'FIXEDZOOM ERROR: ';
 const NOTIFICATION_DURATION = 1500;
 let enabled = false;
 let zoomLevel = 100;
+let scriptInitialized = false;
 
 const onError = function(error){
     console.log(LOG_CONST, error);
@@ -21,7 +22,7 @@ const loadSettings = function(){
             onError('Zoom value is invalid ' + settings.zoomLevel);
             return;
         }
-
+        scriptInitialized = true;
         enabled = settings.enabled;
         zoomLevel = settings.zoomLevel;
     });
@@ -44,7 +45,6 @@ const changeZoomInTabs = function(tabs) {
 
 const changeZoomInAllTabs = function() {
     var querying = browser.tabs.query({});
-    
     querying.then(changeZoomInTabs, onError);
 }
 
@@ -72,12 +72,24 @@ const notifySettingsSaved = function(){
       });
 }
 
+/**
+ * Loads the settings and then calls the zoom changing funcion, literally
+ * @param {*} settings 
+ */
+const startScript = function (settings) {
+    if (!scriptInitialized) {
+        loadSettings();
+    } 
+}
+
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
+        case "startFixedZoom":
+            startScript();
+            break;
         case "settingsSaved":
             loadSettings().then(function(){
                 changeZoomInAllTabs();
-                
                 if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
                     if (!enabled) {
                         // actually remove the listener to remove any overhead
