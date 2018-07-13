@@ -6,6 +6,8 @@ let addNewRuleBtn = document.querySelector("#addNewRule");
 let sitesListDiv = document.querySelector("#sitesList");
 let sitesListContainer = document.querySelector("#sitesListContainer");
 
+let validUrl = false;
+
 let sites = [];
 const ZOOM_BTN_STEP = 5;
  /**
@@ -36,8 +38,7 @@ const ZOOM_BTN_STEP = 5;
  * @param {boolean} status 
  */
 const updateUiFromForm = function (status) {
-    document.querySelector("#zoomLevelLbl").innerHTML = zoomLevelInput.value + "%"
-    
+    document.querySelector("#zoomLevelLbl").innerHTML = zoomLevelInput.value + "%"    
 }
 
 /**
@@ -46,6 +47,7 @@ const updateUiFromForm = function (status) {
 const resetForm = function(){
     zoomLevelInput.value = 100;
     domainNameInput.value = '';
+    validateDomainInput();
 }
 
 /**
@@ -76,8 +78,11 @@ function loadSavedSettings() {
  * @param {*} event 
  */
 const addNewRule = function(event){
-    let domain = domainNameInput.value;
+    let domain = domainNameInput.value.trim();
     let zoom = zoomLevelInput.value;
+
+    domain = domain.replace(/^www\./, '');
+
     sites.push({domain: domain, zoom: zoom});
     saveSites().then(function(){
         resetForm();
@@ -90,11 +95,11 @@ const addNewRule = function(event){
 const saveSites = function(){
     return browser.storage.local.set({
         sites: sites
-    }).then(function () {        
+    }).then(function () {
+        makeSitesList();
         browser.runtime.sendMessage({
             method: "settingsSaved",
         });
-        makeSitesList();
     });
 }
 
@@ -105,10 +110,9 @@ const makeSitesList = function(){
     }else{
         sitesListContainer.className = "hide longSep";
     }
-    for(let i in sites){
-        
+    for(let i in sites){        
         let siteDiv = document.createElement('div');
-        siteDiv.className = "savedSite"
+        siteDiv.className = "savedSite";
         
         let domainDiv = document.createElement('div');
         domainDiv.className = "flexOne";
@@ -141,10 +145,60 @@ const makeSitesList = function(){
     }    
 }
 
-const domainChangeListener = function(){
-    
+/**
+ * So so valid domain checker
+ */
+const validDomainChecker = function(str){    
+    let res = str.match(/^[^\.][a-z0-9]+[\.]+[a-z0-9\.]+[^\.]$/g);
+    return res !== null
 }
 
+/**
+ * Validate domain when theres a change in the input
+ */
+const validateDomainInput = function(){
+    function disableInput(){
+        addNewRuleBtn.classList.add('disabledOption');
+    }
+    function enableInput() {
+        addNewRuleBtn.classList.remove('disabledOption');
+    }
+    function markErrorInput(){
+        domainNameInput.classList.add("errorInput");
+    }
+    function removeErrorInput() {
+        domainNameInput.classList.remove("errorInput");
+    }
+    function markValidInput() {
+        domainNameInput.classList.add("validInput");
+    }
+    function removeValidInput() {
+        domainNameInput.classList.remove("validInput");
+    }
+
+    let val = domainNameInput.value.trim();    
+    if(val.length < 4){
+        disableInput();
+        removeErrorInput();
+        removeValidInput();
+    }
+
+    else if(!validDomainChecker(val)){
+        disableInput();
+        removeValidInput();
+        markErrorInput();
+    }
+
+    else{
+        enableInput();
+        removeErrorInput();
+        markValidInput();
+    }
+    /** first and last extension I do without a framework */
+}
+
+domainNameInput.addEventListener('change', validateDomainInput);
+domainNameInput.addEventListener('input', validateDomainInput);
 document.addEventListener("DOMContentLoaded", resetForm);
 document.addEventListener("DOMContentLoaded", loadSavedSettings);
 zoomLevelInput.addEventListener('change', updateUiFromForm);
@@ -152,4 +206,3 @@ zoomLevelInput.addEventListener('input', updateUiFromForm);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
 addNewRuleBtn.addEventListener("click", addNewRule);
-domainNameInput.addEventListener('change', domainChangeListener);

@@ -9,6 +9,15 @@ html {
   margin-bottom: 16px;
 }
 
+#enabledLabel{
+  font-size: 17px;
+  
+}
+
+#manageBtn:hover{
+  color: black;
+}
+
 .littleHeader{
   font-size: 13px;
   color: #737373;
@@ -56,7 +65,7 @@ a.link{
 }
 
 .button {
-  font-size: 1em;
+  font-size: 17px;
   font-family: 'Ropa Sans', sans-serif;
   background-color: white;
   padding: 10px 20px;

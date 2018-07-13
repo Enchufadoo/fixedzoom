@@ -143,3 +143,11 @@ button{
   pointer-events: none;
   filter: opacity(50%);
 }
+
+.errorInput{
+  border-color: red!important;
+}
+
+.validInput{
+  border-color: green !important;
+}

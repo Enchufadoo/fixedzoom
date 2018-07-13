@@ -1,4 +1,3 @@
-
 browser.runtime.sendMessage({
-     method: "openSiteRulesManagement",
+    method: "startFixedZoom",
 });
