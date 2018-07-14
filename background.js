@@ -14,7 +14,7 @@ const onError = function(error){
  */
 const loadSettings = function(){
     return browser.storage.local.get().then(function(settings){
-         
+        
         if(!settings.zoomLevel){
             onError('Zoom missing');
             return;
@@ -45,10 +45,10 @@ const changeZoomInTabs = function(tabs, complete = false) {
             /**
              * var holding a specific site zoom
              */
-            let matchZoom = false;
+            let matchZoom = false; 
             // look for the zoom in settings sites and if theres a match save it in a variable
             // @todo improve
-            if(sites.length && complete){
+            if(sites.length){
                 for(site in sites){
                     let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
                     if(currentHostname == sites[site].domain){
@@ -57,6 +57,7 @@ const changeZoomInTabs = function(tabs, complete = false) {
                     }
                 }    
             }
+            
             let newZoom = matchZoom || zoomLevel
             browser.tabs.setZoom(tab.id, newZoom / 100);
         } else {

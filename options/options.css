@@ -51,7 +51,7 @@ a.link{
 
 .disabled-option {
   pointer-events: none;
-  filter: opacity(50%);
+  filter: opacity(25%);
 }
 
 .primary {

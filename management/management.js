@@ -48,6 +48,7 @@ const resetForm = function(){
     zoomLevelInput.value = 100;
     domainNameInput.value = '';
     validateDomainInput();
+    updateUiFromForm();
 }
 
 /**
