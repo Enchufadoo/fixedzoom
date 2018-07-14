@@ -52,6 +52,7 @@ a.link{
 .disabled-option {
   pointer-events: none;
   filter: opacity(25%);
+  display: none;
 }
 
 .primary {
@@ -132,4 +133,18 @@ a.link{
 #lessButton:after {
   height: 0.2em;
   width: 1em;
+}
+#disabledSector{
+  font-size: 17px;
+  margin-top: 16px;
+}
+
+#enabledLabelText{
+  flex: 0; 
+  margin-left: 15px;
+}
+
+#enabledContainer{
+  display: flex;
+  width: 250px;
 }

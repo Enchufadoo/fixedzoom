@@ -4,6 +4,7 @@ let zoomLevelBtn = document.querySelector("#zoomLevel");
 let plusBtn = document.querySelector("#plusButton");
 let lessBtn = document.querySelector("#lessButton");
 let manageBtn = document.querySelector("#manageBtn");
+let disabledSector = document.querySelector("#disabledSector");
 
 /**
  * Enable or disable the zoom input and change the zoom percentage
@@ -13,8 +14,10 @@ const updateUi = function (status) {
   let zoomSector = document.querySelector("div.zoomSector");
   if (status) {
     zoomSector.classList.remove('disabled-option');
+    disabledSector.classList.add('disabled-option');
   } else {
     zoomSector.classList.add('disabled-option');
+    disabledSector.classList.remove('disabled-option');
   }
   document.querySelector("#zoomLevelLbl").innerHTML = zoomLevelBtn.value + "%"
 }
@@ -26,11 +29,9 @@ const updateUiFromForm = function(){
 
 /**
  * Saves everything in the local storage
- * and reloads t
- * @param {*} e 
+ * and reloads 
  */
-function saveOptions(e) {
-  e.preventDefault();
+function saveOptions() {
   browser.storage.local.set({
     enabled: document.querySelector("#enabled").checked,
     zoomLevel: document.querySelector("#zoomLevel").value
@@ -38,6 +39,7 @@ function saveOptions(e) {
     browser.runtime.sendMessage({
       method: "settingsSaved",
     });
+    updateUiFromForm();
   });
 }
 
@@ -70,7 +72,7 @@ function moreZoom(event){
   let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
   if(value % 5) value -= value % 5;
   zoomLevelBtn.value = value + ZOOM_BTN_STEP;
-  updateUiFromForm();
+  saveOptions();
 }
 /**
  * Substracts zoom with the buttons
@@ -81,7 +83,7 @@ function lessZoom(event) {
   let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
   if (value % 5) value -= value % 5 - ZOOM_BTN_STEP;
   zoomLevelBtn.value = value - ZOOM_BTN_STEP;
-  updateUiFromForm();
+  saveOptions();
 }
 /**
  * Opens the administration of per site zoom rules
@@ -97,9 +99,9 @@ function openSiteManagement(event){
 /**
  * Changes in form updates the ui
  */
-enabledCb.addEventListener('click', updateUiFromForm);
-zoomLevelBtn.addEventListener('change', updateUiFromForm);
-zoomLevelBtn.addEventListener('input', updateUiFromForm);
+enabledCb.addEventListener('change', saveOptions);
+zoomLevelBtn.addEventListener('change', saveOptions);
+zoomLevelBtn.addEventListener('input', saveOptions);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
 manageBtn.addEventListener("click", openSiteManagement);

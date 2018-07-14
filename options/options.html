@@ -5,6 +5,7 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="options.css" />
+  <link rel="stylesheet" href="switch.css" />
   <!-- <link rel="stylesheet" href="chrome://browser/content/extension.css" />
   <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" /> -->
 </head>
@@ -15,9 +16,18 @@
       <div class="littleHeader">
         Browser Custom Zoom
       </div>
-      <label id="enabledLabel" data-i18n="optionEnabledLabel" title="Unchecking and saving sets all open tabs' zoom level to 100%">
-        <input id="enabled" type="checkbox" />
-      </label>
+      <div id="enabledContainer">
+        <div style="flex: 0">
+          <label id="enabledLabel"  title="Unchecking and saving sets all open tabs' zoom level to 100%"  class="switch">
+            <input id="enabled" type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div id="enabledLabelText">
+          <span data-i18n="optionEnabledLabel">
+          </span>
+        </div>
+      </div>
     </div>
     <div class="zoomSector">
       <input type="range" min="25" max="300" value="100" id="zoomLevel" step="1">
@@ -37,8 +47,9 @@
         <a id="manageBtn" role="button" class="link" title="Manage Rules">Manage Rules</a>
       </div>
     </div>
-    <div class="saveSector">
-      <button data-i18n="saveSettingsButton" class="button primary" type="submit"></button>
+    <div id="disabledSector">
+      <b>Addon disabled</b><br />
+      Toggle the <span style="color: grey">enable</span> checkbox
     </div>
 
 

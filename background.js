@@ -89,19 +89,21 @@ const tabUpdateListener = function(tabId, info, tab) {
 
 /**
  * Small popup indicating settings were saved
+ * -removed for now
  */
 const notifySettingsSaved = function(){    
-    browser.notifications.create('fixedzoom', {
-        "type": "basic",
-        "title": "Settings Saved",
-        "message": "Fixed zoom settings saved",
-        "iconUrl": "icons/binoculars.png",
-        "priority": 1
-      }).then(function(n){
-        setTimeout(() => {
-            browser.notifications.clear(n);
-        }, NOTIFICATION_DURATION);        
-      });
+    
+    // browser.notifications.create('fixedzoom', {
+    //     "type": "basic",
+    //     "title": "Settings Saved",
+    //     "message": "Fixed zoom settings saved",
+    //     "iconUrl": "icons/binoculars.png",
+    //     "priority": 1
+    //   }).then(function(n){
+    //     setTimeout(() => {
+    //         browser.notifications.clear(n);
+    //     }, NOTIFICATION_DURATION);        
+    //   });
 }
 
 /**
