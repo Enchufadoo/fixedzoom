@@ -1,10 +1,14 @@
 const ZOOM_BTN_STEP = 5;
+const WAIT_SLIDER_SAVE_OPTIONS = 900;
 let enabledCb = document.querySelector("#enabled");
 let zoomLevelBtn = document.querySelector("#zoomLevel");
 let plusBtn = document.querySelector("#plusButton");
 let lessBtn = document.querySelector("#lessButton");
 let manageBtn = document.querySelector("#manageBtn");
+let restoreBtn = document.querySelector("#restoreBtn");
 let disabledSector = document.querySelector("#disabledSector");
+
+let sliderTimer = false;
 
 /**
  * Enable or disable the zoom input and change the zoom percentage
@@ -83,6 +87,7 @@ function lessZoom(event) {
   let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
   if (value % 5) value -= value % 5 - ZOOM_BTN_STEP;
   zoomLevelBtn.value = value - ZOOM_BTN_STEP;
+  
   saveOptions();
 }
 /**
@@ -97,14 +102,40 @@ function openSiteManagement(event){
 }
 
 /**
+ * When the slider changes, dont change the zoom right away
+ * because a lot of this event with a lot of tabs
+ * causes too much cpu usage
+ * @param {*} event 
+ */
+function sliderChangeHandler(event){
+  updateUiFromForm();
+  if(sliderTimer) clearTimeout(sliderTimer);  
+  window.setTimeout(function(){
+    saveOptions();
+  }, WAIT_SLIDER_SAVE_OPTIONS)
+}
+
+/**
+ * Restores the browser zoom to 100%
+ * @param {*} event 
+ */
+function restoreDefaultZoom(event) {
+  event.preventDefault();
+  browser.runtime.sendMessage({
+    method: "restoreDefaultZoom",
+  });
+}
+
+/**
  * Changes in form updates the ui
  */
 enabledCb.addEventListener('change', saveOptions);
-zoomLevelBtn.addEventListener('change', saveOptions);
-zoomLevelBtn.addEventListener('input', saveOptions);
+zoomLevelBtn.addEventListener('change', sliderChangeHandler);
+zoomLevelBtn.addEventListener('input', sliderChangeHandler);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
 manageBtn.addEventListener("click", openSiteManagement);
+restoreBtn.addEventListener("click", restoreDefaultZoom);
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);

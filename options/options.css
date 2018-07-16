@@ -14,7 +14,7 @@ html {
   
 }
 
-#manageBtn:hover{
+.link:hover{
   color: black;
 }
 
@@ -147,4 +147,8 @@ a.link{
 #enabledContainer{
   display: flex;
   width: 250px;
+}
+
+.longSep {
+  margin-top: 20px;
 }

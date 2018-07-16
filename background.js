@@ -60,9 +60,7 @@ const changeZoomInTabs = function(tabs, complete = false) {
             
             let newZoom = matchZoom || zoomLevel
             browser.tabs.setZoom(tab.id, newZoom / 100);
-        } else {
-            browser.tabs.setZoom(tab.id, 1);
-        }
+        } 
     }
 }
 
@@ -123,8 +121,23 @@ const enableSettings= function(){
     }
 }
 
+/**
+ * Restores the default browser zoom 100%
+ */
+const restoreDefaultZoom = function(){
+     var querying = browser.tabs.query({});
+     querying.then(function(tabs){
+         for (let tab of tabs) {
+             browser.tabs.setZoom(tab.id, 1);
+         }
+     }, onError);
+}
+
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
+         case "restoreDefaultZoom":
+             restoreDefaultZoom();
+             break;
         case "startFixedZoom":
             loadSettings().then(function () {
                 enableSettings();
