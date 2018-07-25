@@ -8,12 +8,43 @@
 		"description": "Descripción de la extensión"
 	},
 	"optionEnabledLabel": {
-		"message": "Habilitado",
-		"description": "Estado de la extensión"
+		"message": "Habilitar",
+		"description": "Habilitar o deshabilita la extensión"
 	},
 	"saveSettingsButton": {
 		"message": "Guardar los Cambios",
 		"description": "Guarda las opciones de la extensión"
-	}	
-	
+	},
+	"subheaderZoomRules": {
+		"message": "Reglas para Sitios",
+		"description": "Especifica reglas de zoom para determinados sitios"
+	},
+	"subheaderBrowserZoom": {
+		"message": "Zoom del Navegador",
+		"description": "Establece un nivel global de zoom"
+	},
+	"manageRulesButton": {
+		"message": "Administrar Reglas",
+		"description": "Abre la administracion de reglas para sitios"
+	},
+	"addonDisabledLabel": {
+		"message": "Extensión Deshabilitada",
+		"description": "El complemento se encuentra apagado"
+	},
+	"toggleTheLabel": {
+		"message": "Aprieta la casilla ",
+		"description": ""
+	},
+	"enableLabel": {
+		"message": "habilitar",
+		"description": ""
+	},
+	"checkboxLabel": {
+		"message": "",
+		"description": ""
+	},
+	"restoreButton": {
+		"message": "Restaurar el zoom al 100%",
+		"description": "Devuelve todas las pestañas nuevamente al zoom predeterminado"
+	}		
 }

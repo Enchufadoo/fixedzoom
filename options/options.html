@@ -13,8 +13,7 @@
 <body>
   <form class="form-gray">
     <div>
-      <div class="littleHeader">
-        Browser Custom Zoom
+      <div class="littleHeader" data-i18n="subheaderBrowserZoom">        
       </div>
       <div id="enabledContainer">
         <div style="flex: 0">
@@ -41,22 +40,18 @@
         </div>
       </div>
       <div class="zoomRules">
-        <div class="littleHeader">
-          Zoom Rules by Site
+        <div class="littleHeader" data-i18n="subheaderZoomRules">          
         </div>
-        <a id="manageBtn" role="button" class="link" title="Manage Rules">Manage Rules</a>
+        <a id="manageBtn" role="button" class="link" title="Manage Rules" data-i18n="manageRulesButton"></a>
       </div>
     </div>
     <div id="disabledSector">
-      <b>Addon disabled</b><br />
-      Toggle the <span style="color: grey">enable</span> checkbox
+      <b data-i18n="addonDisabledLabel"></b><br />
+      <span data-i18n="toggleTheLabel"></span> <span data-i18n="enableLabel" style="color: grey"></span> <span data-i18n="checkboxLabel"></span> 
       <div class="longSep">
-        <a id="restoreBtn" role="button" class="link">Restore zoom to 100%</a>
+        <a id="restoreBtn" role="button" class="link" data-i18n="restoreButton"></a>
       </div>
     </div>
-    
-    
-
   </form>
 
   <script src="options.js"></script>

@@ -14,5 +14,37 @@
 	"saveSettingsButton": {
 		"message": "Save Settings",
 		"description": "Saves the extension settings"
-	}	
+	},
+	"subheaderZoomRules": {
+		"message": "Zoom Rules by Site",
+		"description": "Zoom rules for a specific website"
+	},
+	"subheaderBrowserZoom": {
+		"message": "Browser Custom Zoom",
+		"description": "Sets a global zoom level"
+	},
+	"manageRulesButton": {
+		"message": "Manage Rules",
+		"description": "Opens the websites zoom administration"
+	},
+	"addonDisabledLabel": {
+		"message": "Addon Disabled",
+		"description": "The addons is currently off"
+	},
+	"toggleTheLabel": {
+		"message": "Toggle the",
+		"description": ""
+	},
+	"enableLabel": {
+		"message": "enable",
+		"description": ""
+	},
+	"checkboxLabel": {
+		"message": "checkbox",
+		"description": ""
+	},
+	"restoreButton": {
+		"message": "Restore zoom to 100%",
+		"description": "Restores all tabs back to the default zoom"
+	}
 }
