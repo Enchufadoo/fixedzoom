@@ -84,13 +84,31 @@ const addNewRule = function(event){
 
     
     domain = domain.replace('https://', '').replace('http://', '');
-    domain = domain.replace(/^www\./, '')
+    domain = domain.replace(/^www\./, '');
+    domain = trimSpecial(domain, '/');
     
     sites.push({domain: domain, zoom: zoom});
     saveSites().then(function(){
         resetForm();
     });
 }
+
+/**
+ * Borrowed from https://stackoverflow.com/a/36391166
+ * 
+ * @param {*} s 
+ * @param {*} mask 
+ */
+function trimSpecial(s, mask) {
+    while (~mask.indexOf(s[0])) {
+        s = s.slice(1);
+    }
+    while (~mask.indexOf(s[s.length - 1])) {
+        s = s.slice(0, -1);
+    }
+    return s;
+}
+
 
 /**
  * Saves the sites to the configuration of the extension
@@ -152,7 +170,7 @@ const makeSitesList = function(){
  * So so valid domain checker
  */
 const validDomainChecker = function(str){    
-    let res = str.match(/^(http:\/\/|https:\/\/)?[a-z0-9\-\.]+([a-z0-9])?$/g);
+    let res = str.match(/^(http:\/\/|https:\/\/)?[a-z0-9\-\.]+([\/])?$/g);
     return res !== null
 }
 
