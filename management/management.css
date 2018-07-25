@@ -45,6 +45,7 @@ button{
 
 
 .zoomButton{
+  transition: all .2s!important;
   font-family: 'Ropa Sans', sans-serif;
   min-height: 20px;
   min-width: 40px;
@@ -52,7 +53,6 @@ button{
   paddding: 10px 20px;
   display: inline-block;
   border-radius: 2px!important;
-  transition:  l .2s linear;
   background-color: #fff!important;
   font-size: 8px;
   position: relative;
@@ -60,9 +60,11 @@ button{
   border: 1px solid #3498db!important;
 }
 
+/* im overriding the firefox style rules*/
 .zoomButton:hover{
-  background-color: #3498db;
-  color: white;
+  transition: all .2s!important;
+  background-color: #3498db!important;
+  color: white!important;
 }
 
 
@@ -123,9 +125,16 @@ button{
 }
 
 .removeIcon{
+  transition: all .2s;
   width: 13px;
   height: 13px;
 }
+
+.removeIcon:hover{
+  transition: all .2s;
+  filter: grayscale(1)
+}
+
 
 .removeIconDiv{
   margin-left: 8px;
