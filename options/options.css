@@ -3,6 +3,10 @@ html {
   font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif; 
 }
 
+html, body, .form-gray{
+  background: #FAFCFF;
+}
+
 .zoomRules{
   margin-top: 16px;
   font-size: 17px;
@@ -34,7 +38,7 @@ a.link{
   font-size: 1.2em;
   width: 100%;
   max-width: 450px;
-  background: #FAFCFF;
+  
   padding: 20px;
   box-sizing: border-box;
   
