@@ -82,8 +82,10 @@ const addNewRule = function(event){
     let domain = domainNameInput.value.trim();
     let zoom = zoomLevelInput.value;
 
-    domain = domain.replace(/^www\./, '');
-
+    
+    domain = domain.replace('https://', '').replace('http://', '');
+    domain = domain.replace(/^www\./, '')
+    
     sites.push({domain: domain, zoom: zoom});
     saveSites().then(function(){
         resetForm();
@@ -150,7 +152,7 @@ const makeSitesList = function(){
  * So so valid domain checker
  */
 const validDomainChecker = function(str){    
-    let res = str.match(/^[^\.][a-z0-9]+[\.]+[a-z0-9\.]+[^\.]$/g);
+    let res = str.match(/^(http:\/\/|https:\/\/)?[a-z0-9\-\.]+([a-z0-9])?$/g);
     return res !== null
 }
 
