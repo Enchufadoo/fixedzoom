@@ -3,10 +3,19 @@ let enabled = false;
 let zoomLevel = 100;
 let scriptInitialized = false;
 let sites = [];
+let tabUrlZoomList = {};
 
 const onError = function(error){
     console.log(LOG_CONST, error);
 }
+
+/**
+ * Keeps track of which tab has an url with a specific zoom 
+ * Not to check on every tab update
+ */
+const addUrlZoomList = (tabId, zoomLevel) => {tabUrlZoomList[tabId] = zoomLevel}
+const removeUrlZoomList = tabId => {tabUrlZoomList[tabId] = undefined}
+
 /**
  * Loads the settings and enables the new zoom 
  * if the zoom is valid
@@ -38,38 +47,48 @@ const loadSettings = function(){
  * 
  * @param {tabs}  
  */
-const changeZoomInTabs = function(tabs) {    
+const changeZoomInTabs = function(tabs) {   
     for (let tab of tabs) {
         changeZoomInSingleTab(tab)
     }
 }
 
+/**
+ * Change the zoom in all browser tabs (after settings are loaded)
+ */
 const changeZoomInAllTabs = function() {
     var querying = browser.tabs.query({});
     querying.then(changeZoomInTabs, onError);
 }
 
+/**
+ * Changes the zoom of a single tab
+ * @param {browser.tabs.tab} tab 
+ */
 const changeZoomInSingleTab = function(tab){
-    if(enabled){
-        /**
-         * var holding a specific site zoom
-         */
+    /**
+     * First check if there are sites with custom zoom
+     * If there are, try to find the zoom for the current url
+     * If there's a match save that into an array so that the zoom
+     * lookup doesn't happen on each tabupdate event
+     * 
+     * When the url changes, the value in the array it's cleared
+     * @see tabUpdateListener
+     */
+    if(sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
         let matchZoom = false; 
-        // look for the zoom in settings sites and if theres a match save it in a variable
-        // @todo improve
-        if(sites.length){
-            for(site in sites){
-                let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
-                if(currentHostname == sites[site].domain){
-                    matchZoom = sites[site].zoom;
-                    break;
-                }
-            }    
+        for(site in sites){
+            let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
+            if(currentHostname == sites[site].domain){
+                matchZoom = sites[site].zoom;
+                break;
+            }
         }
-        
-        let newZoom = matchZoom || zoomLevel
-        browser.tabs.setZoom(tab.id, newZoom / 100);
-    } 
+        tabUrlZoomList[tab.id] = matchZoom;
+    }
+    
+    let newZoom = tabUrlZoomList[tab.id] || zoomLevel ;
+    browser.tabs.setZoom(tab.id, newZoom / 100);
 }
 
 const tabUpdateListener = function(tabId, info, tab) {
@@ -79,11 +98,15 @@ const tabUpdateListener = function(tabId, info, tab) {
      * there's a couple of seconds in which the zoom will be 100% sometimes
      * even if I do it only once with a flag from the tab.id
      */
-    changeZoomInSingleTab(tab);
-    
+    if(enabled){
+        /**
+         * If theres a change in the tab url cleanup the saved value for that url
+         */
+        if(info.url) removeUrlZoomList(tabId)
+
+        changeZoomInSingleTab(tab);
+    }
 }
-
-
 
 /**
  * After the settings have been load, update the tabs zoom
@@ -120,9 +143,12 @@ browser.runtime.onMessage.addListener((message, sender) => {
              restoreDefaultZoom();
              break;
         case "startFixedZoom":
-            loadSettings().then(function () {
-                enableSettings();
-            });
+            if(!scriptInitialized){
+                loadSettings().then(function () {
+                    enableSettings();
+                });
+            }
+            
             break;
         case "openSiteRulesManagement":
             browser.tabs.create({
