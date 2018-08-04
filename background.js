@@ -1,5 +1,4 @@
 const LOG_CONST = 'FIXEDZOOM ERROR: ';
-const NOTIFICATION_DURATION = 2000;
 let enabled = false;
 let zoomLevel = 100;
 let scriptInitialized = false;
@@ -37,30 +36,11 @@ const loadSettings = function(){
  * I only do the url check if the tab has finished loading for perfomance...
  * this gets called many times 
  * 
- * @param {zoomLevel, enabled} settings 
+ * @param {tabs}  
  */
-const changeZoomInTabs = function(tabs, complete = false) {    
+const changeZoomInTabs = function(tabs) {    
     for (let tab of tabs) {
-        if(enabled){
-            /**
-             * var holding a specific site zoom
-             */
-            let matchZoom = false; 
-            // look for the zoom in settings sites and if theres a match save it in a variable
-            // @todo improve
-            if(sites.length){
-                for(site in sites){
-                    let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
-                    if(currentHostname == sites[site].domain){
-                        matchZoom = sites[site].zoom;
-                        break;
-                    }
-                }    
-            }
-            
-            let newZoom = matchZoom || zoomLevel
-            browser.tabs.setZoom(tab.id, newZoom / 100);
-        } 
+        changeZoomInSingleTab(tab)
     }
 }
 
@@ -69,6 +49,28 @@ const changeZoomInAllTabs = function() {
     querying.then(changeZoomInTabs, onError);
 }
 
+const changeZoomInSingleTab = function(tab){
+    if(enabled){
+        /**
+         * var holding a specific site zoom
+         */
+        let matchZoom = false; 
+        // look for the zoom in settings sites and if theres a match save it in a variable
+        // @todo improve
+        if(sites.length){
+            for(site in sites){
+                let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
+                if(currentHostname == sites[site].domain){
+                    matchZoom = sites[site].zoom;
+                    break;
+                }
+            }    
+        }
+        
+        let newZoom = matchZoom || zoomLevel
+        browser.tabs.setZoom(tab.id, newZoom / 100);
+    } 
+}
 
 const tabUpdateListener = function(tabId, info, tab) {
     /**
@@ -77,32 +79,11 @@ const tabUpdateListener = function(tabId, info, tab) {
      * there's a couple of seconds in which the zoom will be 100% sometimes
      * even if I do it only once with a flag from the tab.id
      */
-    changeZoomInTabs([tab]);
-    //
-
-    if (info.status === 'complete') {
-        changeZoomInTabs([tab], true);
-    }
-}
-
-/**
- * Small popup indicating settings were saved
- * -removed for now
- */
-const notifySettingsSaved = function(){    
+    changeZoomInSingleTab(tab);
     
-    // browser.notifications.create('fixedzoom', {
-    //     "type": "basic",
-    //     "title": "Settings Saved",
-    //     "message": "Fixed zoom settings saved",
-    //     "iconUrl": "icons/binoculars.png",
-    //     "priority": 1
-    //   }).then(function(n){
-    //     setTimeout(() => {
-    //         browser.notifications.clear(n);
-    //     }, NOTIFICATION_DURATION);        
-    //   });
 }
+
+
 
 /**
  * After the settings have been load, update the tabs zoom
@@ -163,8 +144,6 @@ browser.runtime.onMessage.addListener((message, sender) => {
                         browser.tabs.onUpdated.addListener(tabUpdateListener);
                     }
                 }
-                
-                notifySettingsSaved();
             });
             break;
 	}

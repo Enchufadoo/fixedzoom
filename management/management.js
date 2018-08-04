@@ -170,7 +170,7 @@ const makeSitesList = function(){
  * So so valid domain checker
  */
 const validDomainChecker = function(str){    
-    let res = str.match(/^(http:\/\/|https:\/\/)?[a-z0-9\-\.]+([\/])?$/g);
+    let res = str.match(/^(http:\/\/|https:\/\/)?.+\.[a-zA-Z0-9]+([\/])?$/g);
     return res !== null
 }
 
