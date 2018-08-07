@@ -32,7 +32,7 @@ const loadSettings = function(){
             return;
         }
         scriptInitialized = true;
-
+        tabUrlZoomList = {};
         if(settings.sites) sites = settings.sites;
         enabled = settings.enabled;
         zoomLevel = settings.zoomLevel;
@@ -40,11 +40,7 @@ const loadSettings = function(){
 }
 
 /**
- * Changes the zoom level on the given tabs based on saved settings.
- * complete is if a tab has finish loading
- * I only do the url check if the tab has finished loading for perfomance...
- * this gets called many times 
- * 
+ * Apply the zoom to all tabs
  * @param {tabs}  
  */
 const changeZoomInTabs = function(tabs) {   
@@ -75,8 +71,8 @@ const changeZoomInSingleTab = function(tab){
      * When the url changes, the value in the array it's cleared
      * @see tabUpdateListener
      */
+    let matchZoom = false; 
     if(sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
-        let matchZoom = false; 
         for(site in sites){
             let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
             if(currentHostname == sites[site].domain){
@@ -95,8 +91,7 @@ const tabUpdateListener = function(tabId, info, tab) {
     /**
      * This gets called many times, but if I dont do it 
      * the zoom wont be applied on page load which means 
-     * there's a couple of seconds in which the zoom will be 100% sometimes
-     * even if I do it only once with a flag from the tab.id
+     * there's a couple of seconds in which the zoom will be 100%
      */
     if(enabled){
         /**
@@ -147,8 +142,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
                 loadSettings().then(function () {
                     enableSettings();
                 });
-            }
-            
+            }            
             break;
         case "openSiteRulesManagement":
             browser.tabs.create({
@@ -157,8 +151,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
             break;
         case "settingsSaved":
             loadSettings().then(function(){
-                enableSettings();                
-                changeZoomInAllTabs();                
+                enableSettings();                           
                 if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
                     if (!enabled) {
                         // actually remove the listener to remove any overhead
