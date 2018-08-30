@@ -7,8 +7,11 @@ let lessBtn = document.querySelector("#lessButton");
 let manageBtn = document.querySelector("#manageBtn");
 let restoreBtn = document.querySelector("#restoreBtn");
 let disabledSector = document.querySelector("#disabledSector");
-
+let currentUrlDiv = document.querySelector("#currentUrl");
+let currentSiteSector = document.querySelector("#currentSiteSector");
 let sliderTimer = false;
+
+
 
 /**
  * Enable or disable the zoom input and change the zoom percentage
@@ -48,9 +51,32 @@ function saveOptions() {
 }
 
 /**
+ * Queries for the current url and its a valid one
+ * displays it 
+ */
+const loadCurrentUrl = function(){
+  browser.runtime.sendMessage({
+    method: "getCurrentUrl",
+  }).then(function(currentUrl){
+
+    let url =  new URL(currentUrl)
+    let validProtocol = url.protocol != 'moz-extension:';
+    let currentHostname = (url).hostname.replace(/^www\./, '');
+
+    if(currentHostname && validProtocol){
+      currentUrlDiv.innerHTML = currentHostname
+      currentSiteSector.style.display = "block";
+    }else{
+      currentSiteSector.style.display = "none";
+    }
+  });
+}
+
+/**
  * Loads saved and default settings in the options panel
  */
 function restoreOptions() {
+  
   function setCurrentChoice(result) {
     let status = result.enabled || false;
     document.querySelector("#zoomLevel").value = result.zoomLevel || "100";
@@ -64,6 +90,8 @@ function restoreOptions() {
 
   var getting = browser.storage.local.get();
   getting.then(setCurrentChoice, onError);
+  loadCurrentUrl();
+
 }
 
 

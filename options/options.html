@@ -4,10 +4,11 @@
 
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://browser/content/extension.css" />
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
   <link rel="stylesheet" href="options.css" />
   <link rel="stylesheet" href="switch.css" />
-  <!-- <link rel="stylesheet" href="chrome://browser/content/extension.css" />
-  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" /> -->
+  
 </head>
 
 <body>
@@ -43,7 +44,11 @@
         <div class="littleHeader" data-i18n="subheaderZoomRules">          
         </div>
         <a id="manageBtn" role="button" class="link" title="Manage Rules" data-i18n="manageRulesButton"></a>
+        <div class="basicSep" id="currentSiteSector">
+          <a href="../custom_site/custom_site.html" id="createNewRule" role="button" class="link" title="Create a zoom for the current site">New Rule for <b><span id="currentUrl"></span></b></a>    
+        </div>
       </div>
+      
     </div>
     <div id="disabledSector">
       <b data-i18n="addonDisabledLabel"></b><br />

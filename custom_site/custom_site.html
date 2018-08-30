@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://browser/content/extension.css" />
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
+  <link rel="stylesheet" href="../options/options.css" />   
+  <link rel="stylesheet" href="../options/switch.css" />
+</head>
+
+<body>
+  <form class="form-gray">
+    <div class="zoomRules">
+      <div class="littleHeader">
+          Current Site 
+          <a href="../options/options.html" id="backArrow" class="link">Go Back</a>
+      </div>
+      <div class="basicSep">
+        <div 
+        style="color:  rgb(95, 91, 91); font-size: 18px; font-weight: 600;   margin: 0 auto" 
+        id="currentUrl">
+        </div>  
+      </div>
+      <div style="max-width: 250px; min-width: 250px;">
+          <span >
+          Toggle the switch to change only this site's zoom level.
+          </span>       
+        </div>
+    </div>
+    <div id="enabledContainer">
+        <div style="flex: 0">
+          <label id="enabledLabel"  title="Unchecking and saving sets all open tabs' zoom level to 100%"  class="switch">
+            <input id="enabled" type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+    </div>
+    
+    <div class="zoomSector">
+      <input type="range" min="25" max="300" value="100" id="zoomLevel" step="1">
+      <div id="buttonsContainer">
+        <div style="flex: 0">
+          <button id="lessButton" class="button zoomButton primary"></button>
+        </div>
+        <span id="zoomLevelLbl" style="flex: 1"></span>
+        <div style="flex: 0">
+          <button id="plusButton" class="button zoomButton primary"></button>
+        </div>
+      </div>
+     
+
+    </div>
+   
+  </form>
+
+  <script src="custom_site.js"></script>
+  <script src="../internationalization.js"></script>
+</body>
+
+</html>

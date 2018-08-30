@@ -81,14 +81,16 @@ function loadSavedSettings() {
 const addNewRule = function(event){
     let domain = domainNameInput.value.trim();
     let zoom = zoomLevelInput.value;
-
     
     domain = domain.replace('https://', '').replace('http://', '');
     domain = domain.replace(/^www\./, '');
     domain = trimSpecial(domain, '/');
     
-    sites.push({domain: domain, zoom: zoom});
-    saveSites().then(function(){
+    browser.runtime.sendMessage({
+        method: "saveCustomSiteRule",
+        site: {domain: domain, zoom: zoom}
+    }).then(function(){
+        loadSavedSettings();
         resetForm();
     });
 }
@@ -114,13 +116,9 @@ function trimSpecial(s, mask) {
  * Saves the sites to the configuration of the extension
  */
 const saveSites = function(){
-    return browser.storage.local.set({
-        sites: sites
-    }).then(function () {
-        makeSitesList();
-        browser.runtime.sendMessage({
-            method: "settingsSaved",
-        });
+    makeSitesList();
+    browser.runtime.sendMessage({
+        method: "settingsSaved",
     });
 }
 
@@ -154,8 +152,14 @@ const makeSitesList = function(){
         removeIconDiv.appendChild(removeIcon);
         
         removeIcon.onclick = function(id = i){
-            sites.splice(i, 1);
-            saveSites();
+            let site = sites[i]
+            browser.runtime.sendMessage({
+                method: "deleteCustomSiteRule",
+                site: site
+            }).then(function(){
+                loadSavedSettings();
+            });
+            
         }
 
         siteDiv.appendChild(domainDiv);

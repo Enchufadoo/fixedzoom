@@ -5,6 +5,17 @@ let scriptInitialized = false;
 let sites = [];
 let tabUrlZoomList = {};
 
+/**
+ * Save the last used url in case someone wants to change the zoom
+ * from inside a firefox extension page, or some other weird page
+ * 
+ * If the addon popup was opened when it was in say google.com
+ * but then the url changes to something else like moz-extension:blablabla
+ * then that will be the url that will be used, if I could pass ?site=...
+ * to the custom_site section there would be no problem, but I dont know how
+ */
+let lastUsedUrl = false;
+
 const onError = function(error){
     console.log(LOG_CONST, error);
 }
@@ -21,6 +32,7 @@ const removeUrlZoomList = tabId => {tabUrlZoomList[tabId] = undefined}
  * if the zoom is valid
  */
 const loadSettings = function(){
+    
     return browser.storage.local.get().then(function(settings){
         
         if(!settings.zoomLevel){
@@ -132,9 +144,96 @@ const restoreDefaultZoom = function(){
      }, onError);
 }
 
+/**
+ * Sends to the frontend the url of the current active tab in the current active window
+ */
+const getCurrentUrl = function(){
+    return new Promise((resolve, reject) => {
+        browser.tabs.query({active: true, windowId: browser.windows.WINDOW_ID_CURRENT})
+        .then(tabs => browser.tabs.get(tabs[0].id))
+        .then(tab => {
+            let url = tab.url;
+            let urlObj =  new URL(url)
+            let validProtocol = urlObj.protocol && urlObj.protocol !== 'moz-extension:' ;
+            
+            if(validProtocol){
+                lastUsedUrl = tab.url
+            }
+            resolve(lastUsedUrl);
+        });
+    });   
+}
+
+/**
+ * Adds a rule for a site
+ * if it had a rule delete it frist
+ * @param {*} newRule 
+ */
+const saveCustomSiteRule = function(newRule){
+    let newSites = []
+    if(sites.length){
+        newSites = sites.filter(function(site){
+            return site.domain != newRule.domain;
+        })            
+    }else{
+        newSites = []
+    }
+    newSites.push(newRule);
+
+    browser.storage.local.set({
+        sites: newSites
+    })
+
+    settingsSaved();
+}
+
+/**
+ * Deletes a site rule from the saved settings
+ */
+const deleteCustomSiteRule = function(siteToDelete){
+    if(sites.length){
+        let newSites = sites.filter(function(site){
+            return site.domain != siteToDelete.domain;
+        });      
+        browser.storage.local.set({
+            sites: newSites
+        });
+        settingsSaved();
+    }
+}
+
+/**
+ * Reload everything from local storage
+ * and update the tab listeners
+ */
+const settingsSaved = function(){
+    loadSettings().then(function(){
+        enableSettings();                           
+        if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
+            if (!enabled) {
+                // actually remove the listener to remove any overhead
+                browser.tabs.onUpdated.removeListener(tabUpdateListener);
+            }
+        }
+        else {
+            if (enabled) {
+                browser.tabs.onUpdated.addListener(tabUpdateListener);
+            }
+        }
+    });
+}
+
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.method) {
-         case "restoreDefaultZoom":
+        case "saveCustomSiteRule":
+            saveCustomSiteRule(message.site);
+            break;
+        case "deleteCustomSiteRule":
+            deleteCustomSiteRule(message.site);
+            break;
+        case "getCurrentUrl":
+            return getCurrentUrl();
+        case "restoreDefaultZoom":
              restoreDefaultZoom();
              break;
         case "startFixedZoom":
@@ -150,20 +249,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
             });
             break;
         case "settingsSaved":
-            loadSettings().then(function(){
-                enableSettings();                           
-                if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
-                    if (!enabled) {
-                        // actually remove the listener to remove any overhead
-                        browser.tabs.onUpdated.removeListener(tabUpdateListener);
-                    }
-                }
-                else {
-                    if (enabled) {
-                        browser.tabs.onUpdated.addListener(tabUpdateListener);
-                    }
-                }
-            });
+            settingsSaved();
             break;
 	}
 });
