@@ -82,9 +82,9 @@ const changeZoomInSingleTab = function(tab){
      * 
      * When the url changes, the value in the array it's cleared
      * @see tabUpdateListener
-     */
-    let matchZoom = false; 
+     */    
     if(sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
+        let matchZoom = false; 
         for(site in sites){
             let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
             if(currentHostname == sites[site].domain){
