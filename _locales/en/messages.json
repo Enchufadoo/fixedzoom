@@ -8,7 +8,7 @@
 		"description": "Description of the extension"
 	},
 	"optionEnabledLabel": {
-		"message": "Enabled",
+		"message": "Enable",
 		"description": "Status of the extention"
 	},
 	"saveSettingsButton": {
@@ -32,19 +32,51 @@
 		"description": "The addons is currently off"
 	},
 	"toggleTheLabel": {
-		"message": "Toggle the",
-		"description": ""
+		"message": "Toggle the"
 	},
 	"enableLabel": {
-		"message": "enable",
-		"description": ""
+		"message": "enable"
 	},
 	"checkboxLabel": {
-		"message": "checkbox",
-		"description": ""
+		"message": "switch"
 	},
 	"restoreButton": {
 		"message": "Restore zoom to 100%",
 		"description": "Restores all tabs back to the default zoom"
+	},
+	"newRuleFor": {
+		"message": "New rule for",
+		"description": "Creates a new rule for a specific website"
+	},
+	"currentSiteLbl": {
+		"message": "Current Site"
+	},
+	"goBackBtn": {
+		"message": "Go Back",
+		"description": "Return to previous dialog"
+	},
+	"newSiteDescription": {
+		"message": "Toggle the switch to change only this site's zoom level."
+	},
+	"rulesBySiteTitle": {
+		"message": "Fixed Zoom Rules by Site"
+	},
+	"rulesBySiteSubheader": {
+		"message": "Create a different zoom level for a website"
+	},
+	"rulesBySiteDescription1": {
+		"message": "To set a specific zoom for a website, enter the site's domain name (such as"
+	},
+	"rulesBySiteDescription2": {
+		"message": ", pick a custom zoom to your liking and click on \"add a new rule\"."
+	},
+	"rulesBySitePlaceholder": {
+		"message": "Enter the domain name"
+	},
+	"rulesBySiteNewBtn": {
+		"message": "Add a new rule"
+	},
+	"rulesBySiteListTitle": {
+		"message": "List of created rules"
 	}
 }

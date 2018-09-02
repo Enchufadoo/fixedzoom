@@ -11,19 +11,21 @@
 
 <body>
   <div class="container">
-    <label class="header-name">Fixed Zoom Rules by Site</label>
+    <label class="header-name"><span data-i18n="rulesBySiteTitle"></span></label>
     <div class="longSep">
       <div class="miniHeader">
-        Create a different zoom level for a website
+        <span data-i18n="rulesBySiteSubheader"></span>
       </div>
-      To set a specific zoom for a website, enter the site's domain name (such as
+      <span data-i18n="rulesBySiteDescription1">
+      </span>      
       <br />
-      <span class="domainExample">yahoo.com</span>), pick a custom zoom to your liking and click on "add a new rule".
+      <span class="domainExample">yahoo.com</span>)
+      <span data-i18n="rulesBySiteDescription2"></span>
     </div>
 
     <div class="longSep" id="newSiteContainer">
       <div class="basicSep">
-        <input id="domainName" type="text" placeholder="Enter the domain name" />
+        <input id="domainName" type="text" data-i18n="rulesBySitePlaceholder|placeholder" />
       </div>
       <div class="zoomSector">
         <div id="zoomControlsContainer">
@@ -42,20 +44,20 @@
         </div>
         <div class="longSep">
           <button id="addNewRule" class="accessory-button primary">
-            <span class="buttonBox">Add a new rule</span>
+            <span class="buttonBox" data-i18n="rulesBySiteNewBtn"></span>
           </button>
         </div>
       </div>
     </div>
     <div class="longSep" id="sitesListContainer">
       <div class="miniHeader">
-        List of created rules  
-
+        <span data-i18n="rulesBySiteListTitle"></span>
       </div>      
       <div class="basicSep" id="sitesList"></div>
     </div>
   </div>
 <script src="management.js"></script>
+<script src="../internationalization.js"></script>
 </body>
 
 </html>

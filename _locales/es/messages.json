@@ -32,19 +32,52 @@
 		"description": "El complemento se encuentra apagado"
 	},
 	"toggleTheLabel": {
-		"message": "Aprieta la casilla ",
-		"description": ""
+		"message": "Aprieta el selector "
 	},
 	"enableLabel": {
-		"message": "habilitar",
-		"description": ""
+		"message": "habilitar"
 	},
 	"checkboxLabel": {
-		"message": "",
-		"description": ""
+		"message": ""
 	},
 	"restoreButton": {
 		"message": "Restaurar el zoom al 100%",
 		"description": "Devuelve todas las pestañas nuevamente al zoom predeterminado"
-	}		
+	},
+	"newRuleFor": {
+		"message": "Nueva regla para",
+		"description": "Crea una nueva regla para un sitio específico"
+	},
+	"currentSiteLbl": {
+		"message": "Sitio Actual"
+	},
+	"goBackBtn": {
+		"message": "Ir Atrás",
+		"description": "Volver al diálogo anterior"
+	},
+	"newSiteDescription": {
+		"message": "Activa el selector para cambiar el zoom de este sitio."
+	},
+	"rulesBySiteTitle": {
+		"message": "Reglas de Zoom Diferenciadas por Sitio"
+	},
+	
+	"rulesBySiteSubheader": {
+		"message": "Crea un nivel de zoom diferente para un sitio"
+	},
+	"rulesBySiteDescription1": {
+		"message": "Para establecer un zoom especifico para un sitio, ingresa el dominio del sitio (por ejemplo"
+	},
+	"rulesBySiteDescription2": {
+		"message": ", elije un zoom a tu gusto y haz click sobre \"agregar una nueva regla\"."
+	},
+	"rulesBySitePlaceholder": {
+		"message": "Ingresa el nombre del dominio"
+	},
+	"rulesBySiteNewBtn": {
+		"message": "Agregar una nueva regla"
+	},
+	"rulesBySiteListTitle": {
+		"message": "Lista de reglas creadas"
+	}
 }
