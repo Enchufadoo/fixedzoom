@@ -65,7 +65,7 @@ function restoreOptions() {
       method: "getCurrentUrl",
     }).then(function(currentUrl){
       let currentHostname = (new URL(currentUrl)).hostname.replace(/^www\./, '');
-            
+      zoomLevelBtn.value = result.zoomLevel || "100";   
 
       if(result.sites && result.sites.length > 0){
         for(i in result.sites){
