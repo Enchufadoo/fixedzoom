@@ -1,0 +1,61 @@
+{
+    "extensionName": {
+        "message": "Fixed Zoom",
+        "description": "Name of the extension",
+        "hash": "4776ac85cb1b431d966d7b9e5e718d17"
+    },
+    "extensionDescription": {
+        "message": "为所有页面设置一个固定的缩放级别",
+        "description": "Description of the extension",
+        "hash": "2cb70b841bfc992be383ef6d4c1bc886"
+    },
+    "optionEnabledLabel": {
+        "message": "启用",
+        "description": "Status of the extention",
+        "hash": "9689c35327e2444f88c808cffbdf2920"
+    },
+    "saveSettingsButton": {
+        "message": "保存设置",
+        "description": "Saves the extension settings",
+        "hash": "33e6db25ad942aaa588fdaed013efcaf"
+    },
+    "subheaderZoomRules": {
+        "message": "站点缩放规则",
+        "description": "Zoom rules for a specific website",
+        "hash": "251da782d35776e6e1a94e68d8598333"
+    },
+    "subheaderBrowserZoom": {
+        "message": "自定义默认缩放级别",
+        "description": "Sets a global zoom level",
+        "hash": "b50d04fcc925ab6aa430f02359923e03"
+    },
+    "manageRulesButton": {
+        "message": "管理规则",
+        "description": "Opens the websites zoom administration",
+        "hash": "af8ef53f2e654c2f9837c06980e39c86"
+    },
+    "addonDisabledLabel": {
+        "message": "本扩展已禁用",
+        "description": "The addons is currently off",
+        "hash": "ab854ee4e54a8fe62b44b04274bccb19"
+    },
+    "toggleTheLabel": {
+        "message": "请点击",
+        "hash": "3df4b4009ced2d2d8ed2b77d1cfedd05"
+    },
+    "enableLabel": {
+        "message": "启用",
+        "hash": "f31fad716a932d4e3950b90c66a40ab9"
+    },
+    "checkboxLabel": {
+        "message": "复选框",
+        "hash": "ecb95ea2180907504974109a21ca0654"
+    },
+    "restoreButton": {
+        "message": "恢复缩放到 100%",
+        "description": "Restores all tabs back to the default zoom",
+        "hash": "6b7131cc591acdda13bf268bff78261a"
+    },
+
+    "__WET_LOCALE__": { "message": "zh-CN" }
+}
