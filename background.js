@@ -45,7 +45,6 @@ const loadSettings = function(){
         }
         scriptInitialized = true;
         tabUrlZoomList = {};
-        
         if(settings.sites){ 
             sites = settings.sites;
         } 
@@ -184,47 +183,50 @@ const getCurrentUrl = function(){
  * @param {*} newRule 
  */
 const saveCustomSiteRule = function(newRule){
-    let newSites = []
-    if(sites.length){
-        newSites = sites.filter(function(site){
-            // the partial check it's because you could have the same string
-            // in a partial search and in a domain
-            if(site.domain != newRule.domain){
-                return true;
-            }else{
-                return site.partial !== newRule.partial
-            }
-            
-        })            
-    }else{
-        newSites = []
-    }
-    newSites.push(newRule);
+    loadSettings().then(function(){
+        let newSites = []
+        if(sites.length){
+            newSites = sites.filter(function(site){
+                // the partial check it's because you could have the same string
+                // in a partial search and in a domain
+                if(site.domain != newRule.domain){
+                    return true;
+                }else{
+                    return site.partial == newRule.partial
+                }
+                
+            })            
+        }
+        newSites.push(newRule);
 
-    browser.storage.local.set({
-        sites: newSites
-    })
+        browser.storage.local.set({
+            sites: newSites
+        })
 
-    settingsSaved();
+        settingsSaved();
+    })    
 }
 
 /**
  * Deletes a site rule from the saved settings
  */
 const deleteCustomSiteRule = function(siteToDelete){
-    if(sites.length){
-        let newSites = sites.filter(function(site){
-            if(site.domain != siteToDelete.domain){
-                return true;
-            }else{
-                return site.partial != siteToDelete.partial
-            }
-        });      
-        browser.storage.local.set({
-            sites: newSites
-        });
-        settingsSaved();
-    }
+    loadSettings().then(function(){
+        if(sites.length){
+            let newSites = sites.filter(function(site){
+                if(site.domain != siteToDelete.domain){
+                    return true;
+                }else{
+                    return site.partial != siteToDelete.partial
+                }
+            });      
+            browser.storage.local.set({
+                sites: newSites
+            });
+            settingsSaved();
+        }
+    })
+    
 }
 
 /**
