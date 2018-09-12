@@ -192,7 +192,7 @@ const saveCustomSiteRule = function(newRule){
                 if(site.domain != newRule.domain){
                     return true;
                 }else{
-                    return site.partial == newRule.partial
+                    return site.partial != newRule.partial
                 }
                 
             })            
