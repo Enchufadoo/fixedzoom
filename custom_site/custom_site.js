@@ -15,6 +15,14 @@ let currentSite = false;
 let currentUrl = false;
 let validProtocol = true;
 
+window.onload = function(){
+  // can't think of anything else not to show the switch animation on page load
+  setTimeout(function(){
+    let switche = document.querySelector(".switchContainer");
+    switche.classList.remove('preload');    
+  }, 500)    
+}
+
 const enableSite = function(){
   currentSite.enabled = enabledCb.checked;
   saveOptions();

@@ -11,6 +11,13 @@ let currentUrlDiv = document.querySelector("#currentUrl");
 let currentSiteSector = document.querySelector("#currentSiteSector");
 let sliderTimer = false;
 
+window.onload = function(){
+  // can't think of anything else not to show the switch animation on page load
+  setTimeout(function(){
+    let switche = document.querySelector(".switchContainer");
+    switche.classList.remove('preload');    
+  }, 500)    
+}
 
 
 /**
@@ -76,7 +83,6 @@ const loadCurrentUrl = function(){
  * Loads saved and default settings in the options panel
  */
 function restoreOptions() {
-  
   function setCurrentChoice(result) {
     let status = result.enabled || false;
     document.querySelector("#zoomLevel").value = result.zoomLevel || "100";
@@ -154,6 +160,7 @@ function restoreDefaultZoom(event) {
   });
 }
 
+
 /**
  * Changes in form updates the ui
  */
@@ -164,6 +171,5 @@ plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
 manageBtn.addEventListener("click", openSiteManagement);
 restoreBtn.addEventListener("click", restoreDefaultZoom);
-
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
