@@ -78,5 +78,16 @@
 	},
 	"rulesBySiteListTitle": {
 		"message": "List of created rules"
+	},
+	"partialRuleButton":{
+		"message": "Want to add more advanced rules?"
+	},
+	"partialRuleDescription":{
+		"message": "If you wish to match only part of the url, for example all the domains that contain the word fruit, just begin the word with a #. For example #fruit would match freshfruits.com and reddit.com/r/fruit."
+	},
+	"partialRuleCarefully":{
+		"message": "Use it carefully!"
 	}
+
+
 }

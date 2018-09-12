@@ -161,3 +161,18 @@ button{
 .validInput{
   border-color: green !important;
 }
+
+.partialDomain{
+  font-variant: small-caps;
+  color:#6b6b6b;
+  font-style: italic;
+  text-align: right;
+  padding-right: 10px;
+  float: right;
+}
+
+#partialRuleDescription{
+  display: none;
+  max-width: 600px;
+  padding: 10px 0px ;
+}

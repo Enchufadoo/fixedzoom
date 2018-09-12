@@ -1,5 +1,6 @@
 let plusBtn = document.querySelector("#plusButton");
 let lessBtn = document.querySelector("#lessButton");
+let partialRuleBtn = document.querySelector("#partialRuleButton");
 let zoomLevelInput = document.querySelector("#zoomLevel");
 let domainNameInput = document.querySelector("#domainName");
 let addNewRuleBtn = document.querySelector("#addNewRule");
@@ -10,6 +11,9 @@ let validUrl = false;
 
 let sites = [];
 const ZOOM_BTN_STEP = 5;
+
+
+
  /**
   * Adds more zoom with the buttons
   * @param {*} event 
@@ -76,19 +80,26 @@ function loadSavedSettings() {
 
 /**
  * Adds a new rule for a specific site on button click inside the settings
+ * partial means search for a string inside the url and not check the domain
+ * useful for matching moz-extension and other weird urls
  * @param {*} event 
  */
 const addNewRule = function(event){
     let domain = domainNameInput.value.trim();
     let zoom = zoomLevelInput.value;
-    
-    domain = domain.replace('https://', '').replace('http://', '');
-    domain = domain.replace(/^www\./, '');
-    domain = trimSpecial(domain, '/');
+    let partial = false;
+    if(domain.indexOf("#") === 0){
+        partial = true;
+        domain = domain.substr(1)
+    }else{
+        domain = domain.replace('https://', '').replace('http://', '');
+        domain = domain.replace(/^www\./, '');
+        domain = trimSpecial(domain, '/');
+    }
     
     browser.runtime.sendMessage({
         method: "saveCustomSiteRule",
-        site: {domain: domain, zoom: zoom}
+        site: {domain: domain, zoom: zoom, partial: partial}
     }).then(function(){
         loadSavedSettings();
         resetForm();
@@ -136,7 +147,15 @@ const makeSitesList = function(){
         let domainDiv = document.createElement('div');
         domainDiv.className = "flexOne";
         let domainText = document.createTextNode(sites[i].domain);
-        domainDiv.appendChild(domainText);
+        domainDiv.appendChild(domainText); 
+        
+        if(sites[i].partial){
+            let partialSpan = document.createElement('span');
+            partialSpan.className = "partialDomain";
+            let partialText = document.createTextNode(' (Partial Search)');
+            partialSpan.appendChild(partialText);
+            domainDiv.appendChild(partialSpan)
+        }
         
         let zoomDiv = document.createElement('div');
         zoomDiv.className = "flexZero";
@@ -202,7 +221,21 @@ const validateDomainInput = function(){
     }
 
     let val = domainNameInput.value.trim();    
-    if(val.length < 4){
+
+    // if the first character is a # do a string search and not domain search
+    if(val.trim().indexOf("#") === 0){
+        if(val.length < 2){
+            disableInput();
+            removeValidInput();
+            removeErrorInput();
+        }else{
+            removeErrorInput();
+            markValidInput();
+            enableInput();
+        }        
+    }
+
+    else if(val.length < 4){
         disableInput();
         removeErrorInput();
         removeValidInput();
@@ -222,6 +255,14 @@ const validateDomainInput = function(){
     /** first and last extension I do without a framework */
 }
 
+const showPartialInstructions = function(event){
+    event.preventDefault();
+    let instructionsDiv = document.querySelector("#partialRuleDescription");
+    //getComputedStyle(instructionsDiv, 'display') === 'block' ? 'none' : 'block';
+    instructionsDiv.style.display = instructionsDiv.style.display === '' ? 'block' : '' ;  
+    
+}
+
 domainNameInput.addEventListener('change', validateDomainInput);
 domainNameInput.addEventListener('input', validateDomainInput);
 document.addEventListener("DOMContentLoaded", resetForm);
@@ -231,3 +272,4 @@ zoomLevelInput.addEventListener('input', updateUiFromForm);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
 addNewRuleBtn.addEventListener("click", addNewRule);
+partialRuleBtn.addEventListener("click", showPartialInstructions);

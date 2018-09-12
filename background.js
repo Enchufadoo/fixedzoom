@@ -45,7 +45,10 @@ const loadSettings = function(){
         }
         scriptInitialized = true;
         tabUrlZoomList = {};
-        if(settings.sites) sites = settings.sites;
+        
+        if(settings.sites){ 
+            sites = settings.sites;
+        } 
         enabled = settings.enabled;
         zoomLevel = settings.zoomLevel;
     });
@@ -84,13 +87,24 @@ const changeZoomInSingleTab = function(tab){
      * @see tabUpdateListener
      */    
     if(sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
+        let sitesReversed = sites.slice().reverse();
         let matchZoom = false; 
-        for(site in sites){
-            let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
-            if(currentHostname == sites[site].domain){
-                matchZoom = sites[site].zoom;
-                break;
+        for(site in sitesReversed){
+            let siteRule = sitesReversed[site];
+            if(siteRule.partial){
+                // If there's a partial string search as opposed to a domain search
+                if(tab.url.indexOf(siteRule.domain) !== -1){
+                    matchZoom = siteRule.zoom;
+                    break;
+                }
+            }else{
+                let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
+                if(currentHostname == siteRule.domain){
+                    matchZoom = siteRule.zoom;
+                    break;
+                }
             }
+            
         }
         tabUrlZoomList[tab.id] = matchZoom;
     }
@@ -173,7 +187,14 @@ const saveCustomSiteRule = function(newRule){
     let newSites = []
     if(sites.length){
         newSites = sites.filter(function(site){
-            return site.domain != newRule.domain;
+            // the partial check it's because you could have the same string
+            // in a partial search and in a domain
+            if(site.domain != newRule.domain){
+                return true;
+            }else{
+                return site.partial !== newRule.partial
+            }
+            
         })            
     }else{
         newSites = []
@@ -193,7 +214,11 @@ const saveCustomSiteRule = function(newRule){
 const deleteCustomSiteRule = function(siteToDelete){
     if(sites.length){
         let newSites = sites.filter(function(site){
-            return site.domain != siteToDelete.domain;
+            if(site.domain != siteToDelete.domain){
+                return true;
+            }else{
+                return site.partial != siteToDelete.partial
+            }
         });      
         browser.storage.local.set({
             sites: newSites
