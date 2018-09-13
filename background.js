@@ -132,7 +132,9 @@ const tabUpdateListener = function(tabId, info, tab) {
  * After the settings have been load, update the tabs zoom
  */
 const enableSettings= function(){
-    changeZoomInAllTabs();
+    if(enabled){
+        changeZoomInAllTabs();
+    }
     if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
         if (!enabled) {
             // actually remove the listener to remove any overhead
@@ -235,18 +237,7 @@ const deleteCustomSiteRule = function(siteToDelete){
  */
 const settingsSaved = function(){
     loadSettings().then(function(){
-        enableSettings();                           
-        if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
-            if (!enabled) {
-                // actually remove the listener to remove any overhead
-                browser.tabs.onUpdated.removeListener(tabUpdateListener);
-            }
-        }
-        else {
-            if (enabled) {
-                browser.tabs.onUpdated.addListener(tabUpdateListener);
-            }
-        }
+        enableSettings();
     });
 }
 
