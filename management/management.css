@@ -125,13 +125,13 @@ button{
   flex: 1;
 }
 
-.removeIcon{
+.icon{
   transition: all .2s;
   width: 13px;
   height: 13px;
 }
 
-.removeIcon:hover{
+.icon:hover{
   transition: all .2s;
   filter: grayscale(1)
 }

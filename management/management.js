@@ -302,13 +302,13 @@ const makeSitesList = function(){
         let removeIconDiv = document.createElement('div');
         removeIconDiv.className = 'flexZero removeIconDiv';
         let removeIcon = document.createElement('img');
-        removeIcon.className = "removeIcon";
+        removeIcon.className = "removeIcon icon";
         removeIcon.src = '../icons/remove.svg';
         removeIcon.title = 'Remove current rule';
         removeIconDiv.appendChild(removeIcon);
         
         removeIcon.onclick = function(){
-            let site = sites[i]
+            let site = sites[i];
             browser.runtime.sendMessage({
                 method: "deleteCustomSiteRule",
                 site: site
@@ -317,9 +317,32 @@ const makeSitesList = function(){
             });            
         }
 
+        let editIconDiv = document.createElement('div');
+        editIconDiv.className = 'flexZero removeIconDiv';
+        let editIcon = document.createElement('img');
+        editIcon.className = "editIcon icon";
+        editIcon.src = '../icons/edit.png';
+        editIcon.title = 'Edit current rule';
+        editIconDiv.appendChild(editIcon);
+        
+        editIcon.onclick = function(){
+            let site = sites[i];
+            let domain = site.domain;
+            if(site.partial){
+                domain = '#' + site.domain;
+            }
+
+            storeInstance.dispatch(ACTIONS.SET_DOMAIN_NAME, domain);
+            storeInstance.dispatch(ACTIONS.SET_ZOOM_LEVEL, site.zoom);
+            storeInstance.dispatch(ACTIONS.SET_REGULAR_EXPRESSION, site.regexp);
+        }
+
+
         siteDiv.appendChild(domainDiv);
         siteDiv.appendChild(zoomDiv);
+        siteDiv.appendChild(editIconDiv);
         siteDiv.appendChild(removeIconDiv);
+        
         sitesListDiv.appendChild(siteDiv);
     }    
 }
