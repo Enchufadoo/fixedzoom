@@ -1,3 +1,99 @@
+// Constants ---------------
+const ACTIONS = {
+    SET_ZOOM_LEVEL: 'SET_ZOOM_LEVEL',
+    SET_DOMAIN_NAME: 'SET_DOMAIN_NAME',
+    SET_SITE_LIST: 'SET_SITE_LIST',
+    SET_REGULAR_EXPRESSION: 'SET_REGULAR_EXPRESION'
+}
+const MUTATIONS = {
+    SET_ZOOM_LEVEL: 'SET_ZOOM_LEVEL',
+    SET_DOMAIN_NAME: 'SET_DOMAIN_NAME',
+    SET_SITE_LIST: 'SET_SITE_LIST',
+    SET_REGULAR_EXPRESSION: 'SET_REGULAR_EXPRESION'
+}
+const EVENTS = {
+    LIST_CHANGE: 'LIST_CHANGE',
+    STATE_CHANGE: 'STATE_CHANGE',
+    DOMAIN_CHANGE: 'DOMAIN_CHANGE',
+    REGEXP_CHANGE: 'REGEXP_CHANGE',
+    ZOOM_LEVEL_CHANGE: 'ZOOM_LEVEL_CHANGE'
+}
+
+const ZOOM_BTN_STEP = 5;
+const DEFAULT_ZOOM = 100;
+
+// -----------------------------------------------
+// Beedle state management object
+let storeInstance = new beedle({
+    actions: {
+        /**
+         * Setting the zoom level udates the label
+         */
+        [ACTIONS.SET_ZOOM_LEVEL](context, value) {
+            context.commit(MUTATIONS.SET_ZOOM_LEVEL, value);
+            if(zoomLevelInput.value !== value){
+                zoomLevelInput.value = value
+            }                
+            document.querySelector("#zoomLevelLbl").innerHTML = value + "%";
+        },
+        /**
+         * Setting the domain validates it against regexp/normal domain checks
+         */
+        [ACTIONS.SET_DOMAIN_NAME](context, domainName) {
+            context.commit(MUTATIONS.SET_DOMAIN_NAME, domainName);
+            if(domainNameInput.value !== domainName){
+                domainNameInput.value = domainName   
+            }
+            validateDomainInput();
+        },
+        /**
+         * When the site list changes re render it
+         */
+        [ACTIONS.SET_SITE_LIST](context, siteList) {
+            context.commit(MUTATIONS.SET_SITE_LIST, siteList);
+            makeSitesList();
+        },
+        /**
+         * When the checkbox for regexp changes revalidate the input
+         */
+        [ACTIONS.SET_REGULAR_EXPRESSION](context, regexp) {
+            context.commit(MUTATIONS.SET_REGULAR_EXPRESSION, regexp);
+            if(regexpCheckbox.checked !== regexp){
+                regexpCheckbox.checked = regexp    
+            }
+            validateDomainInput();
+        }
+    },
+    mutations: {
+        [MUTATIONS.SET_ZOOM_LEVEL](state, value) {
+            state.management.zoomLevel = value;
+            return state;
+        },
+        [MUTATIONS.SET_DOMAIN_NAME](state, domainName) {
+            state.management.domainName = domainName;
+            return state;
+        },
+        [MUTATIONS.SET_SITE_LIST](state, siteList) {
+            state.management.sites = siteList;
+            return state;
+        },
+        [MUTATIONS.SET_REGULAR_EXPRESSION](state, regexp) {
+            state.management.regexp = regexp;
+            return state;
+        }
+    },
+    initialState: {
+        management:{
+            sites: {},
+            validUrl: false,
+            zoomLevel: DEFAULT_ZOOM,
+            domainName: '',
+            regexp: false
+        }
+    }
+});
+// ------------------------------------------------------
+// DOM elements
 let plusBtn = document.querySelector("#plusButton");
 let lessBtn = document.querySelector("#lessButton");
 let partialRuleBtn = document.querySelector("#partialRuleButton");
@@ -6,76 +102,48 @@ let domainNameInput = document.querySelector("#domainName");
 let addNewRuleBtn = document.querySelector("#addNewRule");
 let sitesListDiv = document.querySelector("#sitesList");
 let sitesListContainer = document.querySelector("#sitesListContainer");
+let regexpCheckbox = document.querySelector("#regexpCheckbox");
+let regexpContainer = document.querySelector("#regexpContainer");
 
-let validUrl = false;
-
-let sites = [];
-const ZOOM_BTN_STEP = 5;
-
-
-
- /**
-  * Adds more zoom with the buttons
-  * @param {*} event 
-  */
- function moreZoom(event) {
-     event.preventDefault();
-     let value = zoomLevelInput.value = parseInt(zoomLevelInput.value);
+// -------------------------------------------------------
+// Funcions to handle DOM Events
+/**
+ * Adds more zoom with the buttons
+ * @param {*} event 
+ */
+const moreZoom = function(event) {
+     event.preventDefault();     
+     let value = storeInstance.state.management.zoomLevel;
      if (value % 5) value -= value % 5;
-     zoomLevelInput.value = value + ZOOM_BTN_STEP;
-     updateUiFromForm();
+     value = value + ZOOM_BTN_STEP;
+     storeInstance.dispatch(ACTIONS.SET_ZOOM_LEVEL, value);
  }
  /**
   * Substracts zoom with the buttons
   * @param {*} event 
   */
- function lessZoom(event) {
+const lessZoom = function(event) {
      event.preventDefault();
-     let value = zoomLevelInput.value = parseInt(zoomLevelInput.value);
+     let value = storeInstance.state.management.zoomLevel;
      if (value % 5) value -= value % 5 - ZOOM_BTN_STEP;
-     zoomLevelInput.value = value - ZOOM_BTN_STEP;
-     updateUiFromForm();
+     value = value - ZOOM_BTN_STEP;
+     storeInstance.dispatch(ACTIONS.SET_ZOOM_LEVEL, value);
 }
 
 /**
- * UPdates the form controls
- * @param {boolean} status 
+ * Sets the value of the zoom from the slider
+ * @param {*} event 
  */
-const updateUiFromForm = function (status) {
-    document.querySelector("#zoomLevelLbl").innerHTML = zoomLevelInput.value + "%"    
+const setZoom = function(event){
+    storeInstance.dispatch(ACTIONS.SET_ZOOM_LEVEL, zoomLevelInput.value);
 }
 
 /**
- * Starting values for the form
+ * Sets the name of the domain from the text input
+ * @param {*} event 
  */
-const resetForm = function(){
-    zoomLevelInput.value = 100;
-    domainNameInput.value = '';
-    validateDomainInput();
-    updateUiFromForm();
-}
-
-/**
- * Loads saved and default settings in the options panel
- */
-function loadSavedSettings() {
-    function setCurrentChoice(result) {
-        if(!result.sites){
-            browser.storage.local.set({
-                sites: sites
-            });
-        }else{
-            sites = result.sites;
-        }
-        makeSitesList();
-    }
-
-    function onError(error) {
-        console.log(`Error: ${error}`);
-    }
-
-    var getting = browser.storage.local.get();
-    getting.then(setCurrentChoice, onError);
+const setDomain = function(event){
+    storeInstance.dispatch(ACTIONS.SET_DOMAIN_NAME, domainNameInput.value);
 }
 
 /**
@@ -85,10 +153,17 @@ function loadSavedSettings() {
  * @param {*} event 
  */
 const addNewRule = function(event){
-    let domain = domainNameInput.value.trim();
-    let zoom = zoomLevelInput.value;
+    event.preventDefault(); 
+    let domain = storeInstance.state.management.domainName;
+    let zoom =  storeInstance.state.management.zoomLevel;
+    let regexp = storeInstance.state.management.regexp;
+    
     let partial = false;
-    if(domain.indexOf("#") === 0){
+
+    if(regexp){
+        // do nothing
+    }
+    else if(domain.indexOf("#") === 0){
         partial = true;
         domain = domain.substr(1)
     }else{
@@ -99,11 +174,76 @@ const addNewRule = function(event){
     
     browser.runtime.sendMessage({
         method: "saveCustomSiteRule",
-        site: {domain: domain, zoom: zoom, partial: partial}
+        site: {domain: domain, zoom: zoom, partial: partial, regexp: regexp}
     }).then(function(){
         loadSavedSettings();
         resetForm();
     });
+}
+
+/**
+ * Shows explanation div for advanced rules
+ * @param {*} event 
+ */
+const showPartialInstructions = function(event){
+    event.preventDefault();
+    let instructionsDiv = document.querySelector("#partialRuleDescription");
+    //getComputedStyle(instructionsDiv, 'display') === 'block' ? 'none' : 'block';
+    instructionsDiv.style.display = instructionsDiv.style.display === '' ? 'block' : '' ;  
+}
+
+/**
+ * Stores if the input is a regular expression or not
+ * @param {*} event 
+ */
+const setRegularExpression = function(event){
+    storeInstance.dispatch(ACTIONS.SET_REGULAR_EXPRESSION, regexpCheckbox.checked ? true : false)
+    // can't trust those js booleans!
+}
+
+// Text input validation handlers
+const disableInput = function(){
+    addNewRuleBtn.classList.add('disabledOption');
+}
+const enableInput = function() {
+    addNewRuleBtn.classList.remove('disabledOption');
+}
+const markErrorInput = function(){
+    domainNameInput.classList.add("errorInput");
+}
+const removeErrorInput = function() {
+    domainNameInput.classList.remove("errorInput");
+}
+const markValidInput = function() {
+    domainNameInput.classList.add("validInput");
+}
+const removeValidInput = function() {
+    domainNameInput.classList.remove("validInput");
+}
+//-----------------------------------------------------------
+/**
+ * Loads saved and default settings in the options panel
+ */
+function loadSavedSettings() {
+    function setCurrentChoice(result) {
+         storeInstance.dispatch(ACTIONS.SET_SITE_LIST, result.sites || []);
+         if(result.allowRegexp){
+            regexpContainer.classList.remove('hide');
+         }
+    }
+
+    function onError(error) {
+        console.log(`Error: ${error}`);
+    }
+    
+    var getting = browser.storage.local.get();
+    getting.then(setCurrentChoice, onError);
+}
+
+function resetForm(){
+    storeInstance.dispatch(ACTIONS.SET_DOMAIN_NAME, '');
+    storeInstance.dispatch(ACTIONS.SET_ZOOM_LEVEL, DEFAULT_ZOOM);
+    storeInstance.dispatch(ACTIONS.SET_REGULAR_EXPRESSION, false);
 }
 
 /**
@@ -122,18 +262,8 @@ function trimSpecial(s, mask) {
     return s;
 }
 
-
-/**
- * Saves the sites to the configuration of the extension
- */
-const saveSites = function(){
-    makeSitesList();
-    browser.runtime.sendMessage({
-        method: "settingsSaved",
-    });
-}
-
 const makeSitesList = function(){
+    let sites = storeInstance.state.management.sites;
     sitesListDiv.innerHTML = "";
     if(sites.length > 0){
         sitesListContainer.className = "longSep";
@@ -156,6 +286,13 @@ const makeSitesList = function(){
             partialSpan.appendChild(partialText);
             domainDiv.appendChild(partialSpan)
         }
+        else if(sites[i].regexp){
+            let partialSpan = document.createElement('span');
+            partialSpan.className = "partialDomain";
+            let partialText = document.createTextNode(' (Regexp)');
+            partialSpan.appendChild(partialText);
+            domainDiv.appendChild(partialSpan)
+        }
         
         let zoomDiv = document.createElement('div');
         zoomDiv.className = "flexZero";
@@ -170,21 +307,19 @@ const makeSitesList = function(){
         removeIcon.title = 'Remove current rule';
         removeIconDiv.appendChild(removeIcon);
         
-        removeIcon.onclick = function(id = i){
+        removeIcon.onclick = function(){
             let site = sites[i]
             browser.runtime.sendMessage({
                 method: "deleteCustomSiteRule",
                 site: site
             }).then(function(){
                 loadSavedSettings();
-            });
-            
+            });            
         }
 
         siteDiv.appendChild(domainDiv);
         siteDiv.appendChild(zoomDiv);
         siteDiv.appendChild(removeIconDiv);
-        
         sitesListDiv.appendChild(siteDiv);
     }    
 }
@@ -198,29 +333,49 @@ const validDomainChecker = function(str){
 }
 
 /**
- * Validate domain when theres a change in the input
+ * Validates the domain input whent its a regular expression
+ */
+const validateRegularExpression = function(){
+    let regularExpression = storeInstance.state.management.domainName;
+
+    let valid = true;
+
+    if(regularExpression.length < 1){
+        valid = false
+    }else{
+        try {
+            new RegExp(regularExpression);
+        } catch(e) {
+            isValid = false;
+        }    
+    }    
+    
+    if(valid){
+        markValidInput();
+        enableInput();
+    }else{
+        markErrorInput();
+        disableInput();
+    }
+}
+
+/**
+ * Validates the input
  */
 const validateDomainInput = function(){
-    function disableInput(){
-        addNewRuleBtn.classList.add('disabledOption');
+    let regexp = storeInstance.state.management.regexp;
+    if(regexp){
+        validateRegularExpression();
+    }else{
+        validateDomain();
     }
-    function enableInput() {
-        addNewRuleBtn.classList.remove('disabledOption');
-    }
-    function markErrorInput(){
-        domainNameInput.classList.add("errorInput");
-    }
-    function removeErrorInput() {
-        domainNameInput.classList.remove("errorInput");
-    }
-    function markValidInput() {
-        domainNameInput.classList.add("validInput");
-    }
-    function removeValidInput() {
-        domainNameInput.classList.remove("validInput");
-    }
+}
 
-    let val = domainNameInput.value.trim();    
+/**
+ * Validate the domain entered by the user
+ */
+const validateDomain = function(){
+    let val = storeInstance.state.management.domainName;
 
     // if the first character is a # do a string search and not domain search
     if(val.trim().indexOf("#") === 0){
@@ -255,21 +410,16 @@ const validateDomainInput = function(){
     /** first and last extension I do without a framework */
 }
 
-const showPartialInstructions = function(event){
-    event.preventDefault();
-    let instructionsDiv = document.querySelector("#partialRuleDescription");
-    //getComputedStyle(instructionsDiv, 'display') === 'block' ? 'none' : 'block';
-    instructionsDiv.style.display = instructionsDiv.style.display === '' ? 'block' : '' ;  
-    
-}
-
-domainNameInput.addEventListener('change', validateDomainInput);
-domainNameInput.addEventListener('input', validateDomainInput);
-document.addEventListener("DOMContentLoaded", resetForm);
+/**
+ * Attach events to event handlers
+ */
 document.addEventListener("DOMContentLoaded", loadSavedSettings);
-zoomLevelInput.addEventListener('change', updateUiFromForm);
-zoomLevelInput.addEventListener('input', updateUiFromForm);
+domainNameInput.addEventListener('change', setDomain);
+domainNameInput.addEventListener('input', setDomain);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
+zoomLevelInput.addEventListener('change', setZoom);
+zoomLevelInput.addEventListener('input', setZoom);
 addNewRuleBtn.addEventListener("click", addNewRule);
 partialRuleBtn.addEventListener("click", showPartialInstructions);
+regexpCheckbox.addEventListener("change", setRegularExpression);

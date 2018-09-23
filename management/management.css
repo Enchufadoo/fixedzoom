@@ -40,7 +40,7 @@ button{
   line-height: 35px;
 }
 
-#newSiteContainer{
+.newSiteContainer{
   max-width: 300px;
 }
 
@@ -176,3 +176,17 @@ button{
   max-width: 600px;
   padding: 10px 0px ;
 }
+
+#regexpMarkButton{
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#regexpLabel{
+
+  line-height: 23px;
+  font-size: 13px;
+  
+}
+
+

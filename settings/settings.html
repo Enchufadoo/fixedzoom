@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://browser/content/extension.css" />
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
+  <link rel="stylesheet" href="../options/options.css" />   
+  <link rel="stylesheet" href="../options/switch.css" />
+</head>
+
+<body>
+  <form class="form-gray">
+    <div class="zoomRules">
+      <div class="littleHeader">
+          <span data-i18n="advancedSettingsLabel"></span>
+          <a href="../options/options.html" id="backArrow" class="link"><span data-i18n="goBackBtn"></span></a>
+      </div>
+      
+      <div style="max-width: 250px; min-width: 250px;">
+          <span data-i18n="advancedSettingsRegexTitle"></span>       
+        </div>
+    </div>
+    <div id="enabledContainer">
+        <div style="flex: 0" class="switchContainer preload">
+          <label id="enabledLabel" class="switch">
+            <input id="enabled" type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+    </div>
+    
+   
+  </form>
+
+  <script src="settings.js"></script>
+  <script src="../internationalization.js"></script>
+</body>
+
+</html>

@@ -87,7 +87,17 @@
 	},
 	"partialRuleCarefully":{
 		"message": "Use it carefully!"
+	},
+	"managemetRegexLabel":{
+		"message": "Regular Expression"
+	},
+	"advancedSettingsLabel":{
+		"message": "Advanced Settings"
+	},
+	"settingsLabel":{
+		"message": "Settings"
+	},
+	"advancedSettingsRegexTitle":{
+		"message": "Allow Regular Expressions"
 	}
-
-
 }

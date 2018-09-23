@@ -5,6 +5,7 @@
     let scriptInitialized = false;
     let sites = [];
     let tabUrlZoomList = {};
+    let allowRegexp = false;
     
     /**
      * Save the last used url in case someone wants to change the zoom
@@ -35,19 +36,13 @@
     const loadSettings = function(){
         
         return browser.storage.local.get().then(function(settings){
-            
-            if(!settings.zoomLevel){
-                onError('Zoom missing');
-                return;
-            }        
-            if(settings.zoomLevel < 10 || settings.zoomLevel > 300){
-                onError('Zoom value is invalid ' + settings.zoomLevel);
-                return;
-            }
             scriptInitialized = true;
             tabUrlZoomList = {};
             if(settings.sites){ 
                 sites = settings.sites;
+            } 
+            if(settings.allowRegexp){ 
+                allowRegexp = settings.allowRegexp;
             } 
             enabled = settings.enabled;
             zoomLevel = settings.zoomLevel;
@@ -97,7 +92,15 @@
                         matchZoom = siteRule.zoom;
                         break;
                     }
-                }else{
+                }
+                else if(siteRule.regexp){
+                    let regexp = new RegExp(siteRule.domain);
+                    if(regexp.test(tab.url)){
+                        matchZoom = siteRule.zoom;
+                        break;
+                    }
+                }
+                else{
                     let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
                     if(currentHostname == siteRule.domain){
                         matchZoom = siteRule.zoom;
@@ -195,7 +198,13 @@
                     if(site.domain != newRule.domain){
                         return true;
                     }else{
-                        return site.partial != newRule.partial
+                        if (site.partial === newRule.partial){
+                            return false;
+                        }else if (site.regexp === newRule.regexp){
+                            return false;
+                        }else{
+                            return true
+                        }   
                     }
                     
                 })            
@@ -219,8 +228,15 @@
                 let newSites = sites.filter(function(site){
                     if(site.domain != siteToDelete.domain){
                         return true;
-                    }else{
-                        return site.partial != siteToDelete.partial
+                    }
+                    else{
+                        if (site.partial === siteToDelete.partial){
+                            return false;
+                        }else if (site.regexp === siteToDelete.regexp){
+                            return false;
+                        }else{
+                            return true;
+                        }
                     }
                 });      
                 browser.storage.local.set({
@@ -229,7 +245,6 @@
                 settingsSaved();
             }
         })
-        
     }
     
     /**
@@ -241,6 +256,23 @@
             enableSettings();    
         });
     }
+
+    /**
+     * Saves wheter or not allow regular expressions
+     * @param {*} allowRegexp 
+     */
+    const saveAllowRegexp = function(allowRegexp){
+        loadSettings().then(function(){
+            
+            browser.storage.local.set({
+                allowRegexp: allowRegexp
+            })
+    
+            settingsSaved();
+        })    
+    }
+
+    
     
     browser.runtime.onMessage.addListener((message, sender) => {
         switch (message.method) {
@@ -255,17 +287,13 @@
             case "restoreDefaultZoom":
                  restoreDefaultZoom();
                  break;
-            case "startFixedZoom":
-                if(!scriptInitialized){
-                    loadSettings().then(function () {
-                        enableSettings();
-                    });
-                }            
-                break;
             case "openSiteRulesManagement":
                 browser.tabs.create({
                     "url": "/management/management.html"
                 });
+                break;
+            case "setAllowRegexp":
+                saveAllowRegexp(message.allowRegexp);
                 break;
             case "settingsSaved":
                 settingsSaved();
@@ -273,4 +301,10 @@
         }
     });
     
+    
+    if(!scriptInitialized){
+        loadSettings().then(function () {
+            enableSettings();
+        });
+    }            
 })();

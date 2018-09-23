@@ -89,5 +89,16 @@
 	"partialRuleCarefully":{
 		"message": "Usalo con cuidado!"
 	},
-	
+	"managemetRegexLabel":{
+		"message": "Expresión Regular"
+	},
+	"advancedSettingsLabel":{
+		"message": "Configuración Avanzada"
+	},
+	"settingsLabel":{
+		"message": "Configuración"
+	},
+	"advancedSettingsRegexTitle":{
+		"message": "Permitir expresiones regulares"
+	}
 }

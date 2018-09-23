@@ -30,11 +30,25 @@
       </div>
     </div>
 
-    <div class="longSep" id="newSiteContainer">
-      <div class="basicSep">
-        <input id="domainName" type="text" data-i18n="rulesBySitePlaceholder|placeholder" />
+    <div class="longSep">
+      
+      <div>
+        <div class="basicSep newSiteContainer">
+          <input id="domainName" type="text" data-i18n="rulesBySitePlaceholder|placeholder" />
+        </div>
       </div>
-      <div class="zoomSector">
+      <div id="regexpContainer" class="hide">
+        <div style="display: flex">
+            <div>
+                <label>
+                    <input id="regexpCheckbox" type="checkbox" /> 
+                    
+                </label>
+            </div>        
+            <div id="regexpLabel" data-i18n="managemetRegexLabel"></div>
+        </div>        
+      </div>
+      <div class="zoomSector newSiteContainer">
         <div id="zoomControlsContainer">
           <div style="flex: 0">
             <button id="lessButton" class="button zoomButton"></button>
@@ -63,6 +77,8 @@
       <div class="basicSep" id="sitesList"></div>
     </div>
   </div>
+<script src="../vendor/beedle/beedle.js"></script>
+
 <script src="management.js"></script>
 <script src="../internationalization.js"></script>
 </body>
