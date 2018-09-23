@@ -198,13 +198,8 @@
                     if(site.domain != newRule.domain){
                         return true;
                     }else{
-                        if (site.partial === newRule.partial){
-                            return false;
-                        }else if (site.regexp === newRule.regexp){
-                            return false;
-                        }else{
-                            return true
-                        }   
+                        let same = site.partial === newRule.partial && site.regexp === newRule.regexp;
+                        return !same;
                     }
                     
                 })            
@@ -230,13 +225,8 @@
                         return true;
                     }
                     else{
-                        if (site.partial === siteToDelete.partial){
-                            return false;
-                        }else if (site.regexp === siteToDelete.regexp){
-                            return false;
-                        }else{
-                            return true;
-                        }
+                        let same = site.partial === siteToDelete.partial && site.regexp === siteToDelete.regexp;
+                        return !same;
                     }
                 });      
                 browser.storage.local.set({

@@ -46,6 +46,9 @@
                   self.status = 'resting';
                   
                   return true;
+              },
+              get: function(state, key, value) {
+                  return state[key];
               }
           });
       }
