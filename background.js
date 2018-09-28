@@ -128,8 +128,12 @@
             tabUrlZoomList[tab.id] = matchZoom;
         }
         
-        let newZoom = tabUrlZoomList[tab.id] || zoomLevel ;
-        browser.tabs.setZoom(tab.id, newZoom / 100);
+        let newZoom = tabUrlZoomList[tab.id] || zoomLevel;
+        // Don't create an automatic rule if the extension triggerd the zoom change
+        if(tabCompleteList[tab.id]){
+            tabCompleteList[tab.id].enabled = false;            
+        }
+        browser.tabs.setZoom(tab.id, newZoom / 100);        
     }
     
     const tabUpdateListener = function(tabId, info, tab) {
@@ -151,13 +155,18 @@
              * so if the option of creating rules automaticly is enabled
              * create a new rule
              */
-            if(tab.status === 'complete'){
-                tabCompleteList[tabId] = tab.url;
-            } 
-            else{
-                tabCompleteList[tabId] = undefined;
+            if(allowAutoRule){
+                if(tab.status === 'complete'){
+                    tabCompleteList[tabId] = {};
+                    tabCompleteList[tabId].url = tab.url;
+                    tabCompleteList[tabId].id = tab.id;
+                    tabCompleteList[tabId].enabled = true;
+                } 
+                else{
+                    tabCompleteList[tabId] = undefined;
+                }    
             }
-
+            
             changeZoomInSingleTab(tab);
         }
     }
@@ -329,10 +338,19 @@
          * 0.9
          */
         if(tabCompleteList[zoomChangeInfo.tabId]){
+            /**
+             * I have to do this when the extension triggers zoom changes not
+             * to be mistaken by user made zoom changes
+             */
+            if(!tabCompleteList[zoomChangeInfo.tabId].enabled){
+                tabCompleteList[zoomChangeInfo.tabId].enabled = true;
+                return;
+            }
+
             if(saveZoomRuleTimer) clearTimeout(saveZoomRuleTimer);
             saveZoomRuleTimer = setTimeout(function(){
                 let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
-                let url = tabCompleteList[zoomChangeInfo.tabId];
+                let url = tabCompleteList[zoomChangeInfo.tabId].url;
                 let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
                 
                 saveCustomSiteRule({
