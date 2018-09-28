@@ -252,7 +252,7 @@
     
             return browser.storage.local.set({
                 sites: newSites
-            })              
+            });
     }
     
     /**
@@ -340,6 +340,8 @@
                     domain: currentHostname,
                     partial: false,
                     regexp: false
+                }).then(function(){
+                    loadSettings();
                 });
             }, 200);          
         }
