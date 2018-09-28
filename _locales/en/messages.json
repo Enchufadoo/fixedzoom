@@ -98,6 +98,15 @@
 		"message": "Settings"
 	},
 	"advancedSettingsRegexTitle":{
-		"message": "Allow Regular Expressions"
+		"message": "Allow regular expressions when creating rules"
+	},
+	"regexpLabel":{
+		"message": "Regular Expressions"
+	},
+	"autoRuleLabel":{
+		"message": "Automatic Rules"
+	},
+	"advancedSettingsAutoRuleTitle":{
+		"message": "Save site rule on manual zoom change"
 	}
 }

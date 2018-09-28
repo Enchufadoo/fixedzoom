@@ -6,32 +6,59 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://browser/content/extension.css" />
   <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
-  <link rel="stylesheet" href="../options/options.css" />   
+  <link rel="stylesheet" href="../options/options.css" />
   <link rel="stylesheet" href="../options/switch.css" />
+  <style>
+    .settingExplanation{
+      max-width: 250px; 
+      min-width: 250px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 
 <body>
-  <form class="form-gray">
+  <form class="form-gray settings">
     <div class="zoomRules">
-      <div class="littleHeader">
-          <span data-i18n="advancedSettingsLabel"></span>
+      <div class="basicSep">
+        <div class="littleHeader">
+          <span data-i18n="regexpLabel"></span>
           <a href="../options/options.html" id="backArrow" class="link"><span data-i18n="goBackBtn"></span></a>
-      </div>
-      
-      <div style="max-width: 250px; min-width: 250px;">
-          <span data-i18n="advancedSettingsRegexTitle"></span>       
         </div>
-    </div>
-    <div id="enabledContainer">
+
+        <div class="settingExplanation">
+          <span data-i18n="advancedSettingsRegexTitle"></span>
+        </div>
+      </div>
+      <div>
         <div style="flex: 0" class="switchContainer preload">
-          <label id="enabledLabel" class="switch">
-            <input id="enabled" type="checkbox" />
+          <label class="switch">
+            <input id="allowRegexpCb" type="checkbox" />
             <span class="slider round"></span>
           </label>
         </div>
+      </div>
     </div>
-    
-   
+    <div class="zoomRules">
+      <div class="basicSep">
+        <div class="littleHeader">
+          <span data-i18n="autoRuleLabel"></span>
+        </div>
+
+        <div class="settingExplanation">
+          <span data-i18n="advancedSettingsAutoRuleTitle"></span>
+        </div>
+      </div>
+      <div>
+          <div style="flex: 0" class="switchContainer preload">
+              <label class="switch">
+                <input id="allowAutoRuleCb" type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+      </div>
+    </div>
+
   </form>
 
   <script src="settings.js"></script>

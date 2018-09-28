@@ -99,6 +99,15 @@
 		"message": "Configuración"
 	},
 	"advancedSettingsRegexTitle":{
-		"message": "Permitir expresiones regulares"
+		"message": "Permitir crear reglas con expresions regulares"
+	},
+	"regexpLabel":{
+		"message": "Expresiones Regulares"
+	},
+	"autoRuleLabel":{
+		"message": "Reglas Automaticas"
+	},
+	"advancedSettingsAutoRuleTitle":{
+		"message": "Crear una regla al cambiar el zoom manualmente"
 	}
 }

@@ -5,8 +5,20 @@
     let scriptInitialized = false;
     let sites = [];
     let tabUrlZoomList = {};
+    let tabCompleteList = {};
+    let saveZoomRuleTimer = false;
     let allowRegexp = false;
+    let allowAutoRule = false;
     
+    class SiteConfig{
+        constructor(zoom, domain, partial, regexp){
+            this.zoom = parseInt(zoom);
+            this.domain = domain.trim();
+            this.partial = partial ? partial : false; 
+            this.regexp = regexp ? regexp : false;
+        }
+    }
+
     /**
      * Save the last used url in case someone wants to change the zoom
      * from inside a firefox extension page, or some other weird page
@@ -34,15 +46,19 @@
      * if the zoom is valid
      */
     const loadSettings = function(){
-        
         return browser.storage.local.get().then(function(settings){
             scriptInitialized = true;
             tabUrlZoomList = {};
             if(settings.sites){ 
-                sites = settings.sites;
+                sites = settings.sites.map(function(x){
+                    return new SiteConfig(x.zoom, x.domain, x.partial, x.regexp);
+                });
             } 
             if(settings.allowRegexp){ 
                 allowRegexp = settings.allowRegexp;
+            } 
+            if(settings.allowAutoRule){ 
+                allowAutoRule = settings.allowAutoRule;
             } 
             enabled = settings.enabled;
             zoomLevel = settings.zoomLevel;
@@ -123,15 +139,31 @@
          * there's a couple of seconds in which the zoom will be 100%
          */
         if(enabled){
+            
             /**
              * If theres a change in the tab url cleanup the saved value for that url
              */
             if(info.url) removeUrlZoomList(tabId)
-    
+            
+            /**
+             * Monitor which tabs have a complete status so any posterior zoom change
+             * problably (I think, maybe, most likely) come from the user
+             * so if the option of creating rules automaticly is enabled
+             * create a new rule
+             */
+            if(tab.status === 'complete'){
+                tabCompleteList[tabId] = tab.url;
+            } 
+            else{
+                tabCompleteList[tabId] = undefined;
+            }
+
             changeZoomInSingleTab(tab);
         }
     }
     
+   
+
     /**
      * After the settings have been load, update the tabs zoom
      */
@@ -139,14 +171,27 @@
         if(enabled){
             changeZoomInAllTabs();
         }        
+
         if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
             if (!enabled) {
                 // actually remove the listener to remove any overhead
                 browser.tabs.onUpdated.removeListener(tabUpdateListener);
+                
             }
         } else {
             if (enabled) {
                 browser.tabs.onUpdated.addListener(tabUpdateListener);
+            }
+        }
+        
+
+        if (browser.tabs.onZoomChange.hasListener(handleZoomed)) {
+            if (!enabled || !allowAutoRule) {
+                browser.tabs.onZoomChange.removeListener(handleZoomed);
+            }
+        } else {
+            if (enabled && allowAutoRule) {
+                browser.tabs.onZoomChange.addListener(handleZoomed);
             }
         }
     }
@@ -189,9 +234,8 @@
      * @param {*} newRule 
      */
     const saveCustomSiteRule = function(newRule){
-        loadSettings().then(function(){
-            let newSites = []
-            if(sites.length){
+        let newSites = []
+            if(sites.length){                
                 newSites = sites.filter(function(site){
                     // the partial check it's because you could have the same string
                     // in a partial search and in a domain
@@ -206,12 +250,9 @@
             }
             newSites.push(newRule);
     
-            browser.storage.local.set({
+            return browser.storage.local.set({
                 sites: newSites
-            })
-    
-            settingsSaved();
-        })    
+            })              
     }
     
     /**
@@ -229,10 +270,9 @@
                         return !same;
                     }
                 });      
-                browser.storage.local.set({
+                return browser.storage.local.set({
                     sites: newSites
                 });
-                settingsSaved();
             }
         })
     }
@@ -262,15 +302,63 @@
         })    
     }
 
+    /**
+     * Saves wheter or not allow automatic rules when there's a zoom change
+     * @param {*} allowRegexp 
+     */
+    const saveAllowAutoRule = function(allowAutoRule){
+        loadSettings().then(function(){            
+            browser.storage.local.set({
+                allowAutoRule: allowAutoRule
+            })
     
+            settingsSaved();
+        })    
+    }
+
+    /**
+     * Handles zoom events to create new rules automatically
+     * @param {*} zoomChangeInfo 
+     */
+    function handleZoomed(zoomChangeInfo) {
+        /**
+         * The settimeout its because firefox triggers multiple times the zoomhandler when the zoom 
+         * changes, say if I were to set it to 0.9 this is what happens SOMETIMES
+         * 0.9
+         * 1
+         * 0.9
+         */
+        if(tabCompleteList[zoomChangeInfo.tabId]){
+            if(saveZoomRuleTimer) clearTimeout(saveZoomRuleTimer);
+            saveZoomRuleTimer = setTimeout(function(){
+                let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
+                let url = tabCompleteList[zoomChangeInfo.tabId];
+                let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
+                
+                saveCustomSiteRule({
+                    zoom: zoom,
+                    domain: currentHostname,
+                    partial: false,
+                    regexp: false
+                });
+            }, 200);          
+        }
+        
+    }
     
     browser.runtime.onMessage.addListener((message, sender) => {
         switch (message.method) {
             case "saveCustomSiteRule":
-                saveCustomSiteRule(message.site);
+                let retSave = saveCustomSiteRule(message.site);
+                Promise.resolve(retSave).then(() => {
+                    settingsSaved();
+                })
                 break;
             case "deleteCustomSiteRule":
-                deleteCustomSiteRule(message.site);
+                let retDel = deleteCustomSiteRule(message.site);
+                Promise.resolve(retDel).then(() => {
+                    settingsSaved();
+                })                
                 break;
             case "getCurrentUrl":
                 return getCurrentUrl();
@@ -285,6 +373,9 @@
             case "setAllowRegexp":
                 saveAllowRegexp(message.allowRegexp);
                 break;
+            case "setAllowAutoRule":
+                saveAllowAutoRule(message.allowAutoRule);
+                break;
             case "settingsSaved":
                 settingsSaved();
                 break;
@@ -293,8 +384,10 @@
     
     
     if(!scriptInitialized){
+        
         loadSettings().then(function () {
             enableSettings();
         });
-    }            
+    }       
+         
 })();
