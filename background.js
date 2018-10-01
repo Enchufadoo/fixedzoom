@@ -7,6 +7,8 @@
     let tabUrlZoomList = {};
     let tabCompleteList = {};
     let saveZoomRuleTimer = false;
+    let reenableAutoZoomTimer = false;
+    let autoZoomReenabled = true;
     let allowRegexp = false;
     let allowAutoRule = false;
     
@@ -129,10 +131,20 @@
         }
         
         let newZoom = tabUrlZoomList[tab.id] || zoomLevel;
-        // Don't create an automatic rule if the extension triggerd the zoom change
-        if(tabCompleteList[tab.id]){
-            tabCompleteList[tab.id].enabled = false;            
+        
+        /**
+         * If I don't do this the change in zoom done by the extension
+         * triggers a zoom change event that I can't differentiate
+         * from the users zoom change event
+         */
+        if(allowAutoRule){
+            autoZoomReenabled = false;
+            if(reenableAutoZoomTimer) clearTimeout(reenableAutoZoomTimer);
+            reenableAutoZoomTimer = setTimeout(function(){
+                autoZoomReenabled = true;
+            }, 1000)
         }
+
         browser.tabs.setZoom(tab.id, newZoom / 100);        
     }
     
@@ -160,12 +172,11 @@
                     tabCompleteList[tabId] = {};
                     tabCompleteList[tabId].url = tab.url;
                     tabCompleteList[tabId].id = tab.id;
-                    tabCompleteList[tabId].enabled = true;
                 } 
                 else{
                     tabCompleteList[tabId] = undefined;
-                }    
-            }
+                }
+            }       
             
             changeZoomInSingleTab(tab);
         }
@@ -329,8 +340,14 @@
      * Handles zoom events to create new rules automatically
      * @param {*} zoomChangeInfo 
      */
-    function handleZoomed(zoomChangeInfo) {
-        /**
+    function handleZoomed(zoomChangeInfo) {        
+         /**
+         * if there's a pending zoom change by the extension don't use the event
+         */
+         if(!autoZoomReenabled){
+             return; 
+         }
+         /**
          * The settimeout its because firefox triggers multiple times the zoomhandler when the zoom 
          * changes, say if I were to set it to 0.9 this is what happens SOMETIMES
          * 0.9
@@ -338,15 +355,6 @@
          * 0.9
          */
         if(tabCompleteList[zoomChangeInfo.tabId]){
-            /**
-             * I have to do this when the extension triggers zoom changes not
-             * to be mistaken by user made zoom changes
-             */
-            if(!tabCompleteList[zoomChangeInfo.tabId].enabled){
-                tabCompleteList[zoomChangeInfo.tabId].enabled = true;
-                return;
-            }
-
             if(saveZoomRuleTimer) clearTimeout(saveZoomRuleTimer);
             saveZoomRuleTimer = setTimeout(function(){
                 let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
