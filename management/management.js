@@ -230,6 +230,7 @@ function loadSavedSettings() {
          if(result.allowRegexp){
             regexpContainer.classList.remove('hide');
          }
+         validateDomainInput();
     }
 
     function onError(error) {
