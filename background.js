@@ -142,7 +142,7 @@
             if(reenableAutoZoomTimer) clearTimeout(reenableAutoZoomTimer);
             reenableAutoZoomTimer = setTimeout(function(){
                 autoZoomReenabled = true;
-            }, 1000)
+            }, 500)
         }
 
         browser.tabs.setZoom(tab.id, newZoom / 100);        
@@ -254,7 +254,8 @@
      * @param {*} newRule 
      */
     const saveCustomSiteRule = function(newRule){
-        let newSites = []
+        loadSettings().then(function(){
+            let newSites = []
             if(sites.length){                
                 newSites = sites.filter(function(site){
                     // the partial check it's because you could have the same string
@@ -273,6 +274,7 @@
             return browser.storage.local.set({
                 sites: newSites
             });
+        })        
     }
     
     /**
@@ -340,7 +342,7 @@
      * Handles zoom events to create new rules automatically
      * @param {*} zoomChangeInfo 
      */
-    function handleZoomed(zoomChangeInfo) {        
+    function handleZoomed(zoomChangeInfo) {  
          /**
          * if there's a pending zoom change by the extension don't use the event
          */
