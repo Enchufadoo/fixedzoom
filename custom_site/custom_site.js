@@ -79,9 +79,11 @@ function restoreOptions() {
         for(i in result.sites){
           let site = result.sites[i]
           if(site.domain === currentHostname){
-            currentSite = site;
-            currentSite.enabled =  true;
+            currentSite = site;     
+            currentSite.enabled = true;
             enabledCb.checked = true;
+            currentSite.regexp = false;
+            currentSite.partial = false;
             zoomLevelBtn.value = currentSite.zoom;
           }
         }
@@ -94,7 +96,7 @@ function restoreOptions() {
           enabled: false
         };
       }   
-
+      
       updateUi();
     });
   }

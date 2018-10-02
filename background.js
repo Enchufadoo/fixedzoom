@@ -99,6 +99,7 @@
          * When the url changes, the value in the array it's cleared
          * @see tabUpdateListener
          */    
+        
         if(sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
             let sitesReversed = sites.slice().reverse();
             let matchZoom = false; 
@@ -144,8 +145,7 @@
                 autoZoomReenabled = true;
             }, 500)
         }
-
-        browser.tabs.setZoom(tab.id, newZoom / 100);        
+        browser.tabs.setZoom(tab.id, newZoom / 100); 
     }
     
     const tabUpdateListener = function(tabId, info, tab) {
@@ -254,7 +254,7 @@
      * @param {*} newRule 
      */
     const saveCustomSiteRule = function(newRule){
-        loadSettings().then(function(){
+        return loadSettings().then(function(){
             let newSites = []
             if(sites.length){                
                 newSites = sites.filter(function(site){
@@ -263,7 +263,7 @@
                     if(site.domain != newRule.domain){
                         return true;
                     }else{
-                        let same = site.partial === newRule.partial && site.regexp === newRule.regexp;
+                        let same = !!site.partial === !!newRule.partial && !!site.regexp === !!newRule.regexp;
                         return !same;
                     }
                     
@@ -281,14 +281,14 @@
      * Deletes a site rule from the saved settings
      */
     const deleteCustomSiteRule = function(siteToDelete){
-        loadSettings().then(function(){
+        return loadSettings().then(function(){
             if(sites.length){
                 let newSites = sites.filter(function(site){
                     if(site.domain != siteToDelete.domain){
                         return true;
                     }
                     else{
-                        let same = site.partial === siteToDelete.partial && site.regexp === siteToDelete.regexp;
+                        let same = !!site.partial === !!siteToDelete.partial && !!site.regexp === !!siteToDelete.regexp;
                         return !same;
                     }
                 });      
@@ -318,9 +318,9 @@
             
             browser.storage.local.set({
                 allowRegexp: allowRegexp
-            })
-    
-            settingsSaved();
+            }).then(function(){
+                settingsSaved();
+            })   
         })    
     }
 
@@ -332,9 +332,11 @@
         loadSettings().then(function(){            
             browser.storage.local.set({
                 allowAutoRule: allowAutoRule
+            }).then(function(){
+                settingsSaved();
             })
     
-            settingsSaved();
+            
         })    
     }
 
@@ -356,6 +358,7 @@
          * 1
          * 0.9
          */
+
         if(tabCompleteList[zoomChangeInfo.tabId]){
             if(saveZoomRuleTimer) clearTimeout(saveZoomRuleTimer);
             saveZoomRuleTimer = setTimeout(function(){
@@ -363,14 +366,17 @@
                 let url = tabCompleteList[zoomChangeInfo.tabId].url;
                 let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
                 
-                saveCustomSiteRule({
+                let retSave = saveCustomSiteRule({
                     zoom: zoom,
                     domain: currentHostname,
                     partial: false,
                     regexp: false
-                }).then(function(){
-                    loadSettings();
-                });
+                }).then();
+
+                Promise.resolve(retSave).then(() => {
+                    settingsSaved();
+                })
+
             }, 200);          
         }
         
