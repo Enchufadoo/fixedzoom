@@ -1,14 +1,64 @@
 (function(){
     const LOG_CONST = 'FIXEDZOOM ERROR: ';
-    let enabled = false;
-    let zoomLevel = 100;
-    let scriptInitialized = false;
-    let sites = [];
-    let tabUrlZoomList = {};
-    let tabCompleteList = {};
-    let allowRegexp = false;
-    let allowAutoRule = false;
     
+    class Settings{
+        constructor(){
+            this.enabled = false;
+            this.scriptInitialized = false;
+            this.allowRegexp = false;
+            this.allowAutoRule = false;
+            this.allowMultipleMonitors = false;
+            this.sites = [];
+            this.mainMonitor = {
+                dpi: false,
+                zoomLevel: 100,            
+            }
+        }
+        
+     
+        /**
+         * Saves the new sites rules array
+         * @param {*} sites 
+         */
+        saveSitesStorage(sites){
+            this.sites = sites;
+            tabUrlZoomList = {};
+            return browser.storage.local.set({
+                sites: sites
+            });         
+        }
+
+        /**
+         * Saves wheter or not allow regular expressions
+         * @param {*} allowRegexp 
+        */
+        saveAllowRegexpStorage(allowRegexp){
+            this.allowRegexp = allowRegexp;
+            return browser.storage.local.set({
+                allowRegexp: allowRegexp
+            })   
+        }
+
+        /**
+         * Saves wheter or not allow automatic rules when there's a zoom change
+         * @param {*} allowRegexp 
+        */
+        saveAllowAutoRuleStorage(allowAutoRule){
+            this.allowAutoRule = allowAutoRule;
+            return browser.storage.local.set({
+                allowAutoRule: allowAutoRule
+            })   
+        }
+
+        /**
+         * Clears all saved sites settings
+         */
+        deleteAllRules(){
+            return this.saveSitesStorage([]);
+        }
+        
+    }
+        
     class SiteConfig{
         constructor(zoom, domain, partial, regexp){
             this.zoom = parseInt(zoom);
@@ -17,6 +67,10 @@
             this.regexp = regexp ? regexp : false;
         }
     }
+
+    let extSettings = new Settings();
+    let tabUrlZoomList = {};
+    let tabCompleteList = {};
 
     /**
      * Save the last used url in case someone wants to change the zoom
@@ -37,7 +91,6 @@
      * Keeps track of which tab has an url with a specific zoom 
      * Not to check on every tab update
      */
-    const addUrlZoomList = (tabId, zoomLevel) => {tabUrlZoomList[tabId] = zoomLevel}
     const removeUrlZoomList = tabId => {tabUrlZoomList[tabId] = undefined}
     
     /**
@@ -46,25 +99,27 @@
      */
     const loadSettings = function(){
         return browser.storage.local.get().then(function(settings){
-            scriptInitialized = true;
+            extSettings.scriptInitialized = true;
             tabUrlZoomList = {};
+
             if(settings.sites){ 
-                sites = settings.sites.map(function(x){
+                extSettings.sites = settings.sites.map(function(x){
                     return new SiteConfig(x.zoom, x.domain, x.partial, x.regexp);
                 });
             } 
             if(settings.allowRegexp){ 
-                allowRegexp = settings.allowRegexp;
+                extSettings.allowRegexp = settings.allowRegexp;
             } 
+
             if(settings.allowAutoRule){ 
-                allowAutoRule = settings.allowAutoRule;
+                extSettings.allowAutoRule = settings.allowAutoRule;
             } 
-            enabled = settings.enabled;
-            zoomLevel = settings.zoomLevel;
+
+            extSettings.enabled = settings.enabled;
+            extSettings.mainMonitor.zoomLevel = parseInt(settings.zoomLevel);
         });
     }
-    
-        
+            
     /**
      * Change the zoom in all browser tabs (after settings are loaded)
      * @param {integer} exceptTabId dont change the zoom in that particular tab
@@ -95,8 +150,8 @@
          * @see tabUpdateListener
          */    
         
-        if(sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
-            let sitesReversed = sites.slice().reverse();
+        if(extSettings.sites.length && typeof tabUrlZoomList[tab.id] == 'undefined'){
+            let sitesReversed = extSettings.sites.slice().reverse();
             let matchZoom = false; 
             for(site in sitesReversed){
                 let siteRule = sitesReversed[site];
@@ -126,7 +181,7 @@
             tabUrlZoomList[tab.id] = matchZoom;
         }
         
-        let newZoom = tabUrlZoomList[tab.id] || zoomLevel;        
+        let newZoom = tabUrlZoomList[tab.id] || extSettings.mainMonitor.zoomLevel;     
         browser.tabs.setZoom(tab.id, newZoom / 100); 
     }
     
@@ -136,8 +191,7 @@
          * the zoom wont be applied on page load which means 
          * there's a couple of seconds in which the zoom will be 100%
          */
-        if(enabled){
-            
+        if(extSettings.enabled){
             /**
              * If theres a change in the tab url cleanup the saved value for that url
              */
@@ -149,7 +203,7 @@
              * so if the option of creating rules automaticly is enabled
              * create a new rule
              */
-            if(allowAutoRule){
+            if(extSettings.allowAutoRule){
                 if(tab.status === 'complete'){
                     tabCompleteList[tabId] = {};
                     tabCompleteList[tabId].url = tab.url;
@@ -162,41 +216,47 @@
             changeZoomInSingleTab(tab);
         }
     }
-    
-   
 
     /**
      * After the settings have been load, update the tabs zoom
      */
-    const enableSettings= function(){
-        if(enabled){
+    const enableSettings = function(){
+        if(extSettings.enabled){
             changeZoomInAllTabs();
         }        
 
         if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
-            if (!enabled) {
+            if (!extSettings.enabled) {
                 // actually remove the listener to remove any overhead
                 browser.tabs.onUpdated.removeListener(tabUpdateListener);
                 
             }
         } else {
-            if (enabled) {
+            if (extSettings.enabled) {
                 browser.tabs.onUpdated.addListener(tabUpdateListener);
             }
         }
         
-
+        setZoomChangeHandlers();
+        
+    }
+    
+    /**
+     * Listen to the browser events for zoom in order to create rules
+     * when it happens
+     */
+    const setZoomChangeHandlers = function(){
         if (browser.tabs.onZoomChange.hasListener(handleZoomed)) {
-            if (!enabled || !allowAutoRule) {
+            if (!extSettings.enabled || !extSettings.allowAutoRule) {
                 browser.tabs.onZoomChange.removeListener(handleZoomed);
             }
         } else {
-            if (enabled && allowAutoRule) {
+            if (extSettings.enabled && extSettings.allowAutoRule) {
                 browser.tabs.onZoomChange.addListener(handleZoomed);
             }
         }
     }
-    
+
     /**
      * Restores the default browser zoom 100%
      */
@@ -237,8 +297,8 @@
     const saveCustomSiteRule = function(newRule){
         return loadSettings().then(function(){
             let newSites = []
-            if(sites.length){                
-                newSites = sites.filter(function(site){
+            if(extSettings.sites.length){                
+                newSites = extSettings.sites.filter(function(site){
                     // the partial check it's because you could have the same string
                     // in a partial search and in a domain
                     if(site.domain != newRule.domain){
@@ -246,15 +306,11 @@
                     }else{
                         let same = !!site.partial === !!newRule.partial && !!site.regexp === !!newRule.regexp;
                         return !same;
-                    }
-                    
+                    }                    
                 })            
             }
             newSites.push(newRule);
-            sites = newSites;
-            return browser.storage.local.set({
-                sites: newSites
-            });
+            extSettings.saveSitesStorage(newSites);            
         })        
     }
     
@@ -263,8 +319,8 @@
      */
     const deleteCustomSiteRule = function(siteToDelete){
         return loadSettings().then(function(){
-            if(sites.length){
-                let newSites = sites.filter(function(site){
+            if(extSettings.sites.length){
+                let newSites = extSettings.sites.filter(function(site){
                     if(site.domain != siteToDelete.domain){
                         return true;
                     }
@@ -273,10 +329,7 @@
                         return !same;
                     }
                 });
-                sites = newSites;      
-                return browser.storage.local.set({
-                    sites: newSites
-                });
+                extSettings.saveSitesStorage(newSites);  
             }
         })
     }
@@ -292,87 +345,48 @@
     }
 
     /**
-     * Saves wheter or not allow regular expressions
-     * @param {*} allowRegexp 
-     */
-    const saveAllowRegexp = function(allowRegexp){
-        loadSettings().then(function(){
-            
-            browser.storage.local.set({
-                allowRegexp: allowRegexp
-            }).then(function(){
-                settingsSaved();
-            })   
-        })    
-    }
-
-    /**
-     * Saves wheter or not allow automatic rules when there's a zoom change
-     * @param {*} allowRegexp 
-     */
-    const saveAllowAutoRule = function(allowAutoRule){
-        loadSettings().then(function(){            
-            browser.storage.local.set({
-                allowAutoRule: allowAutoRule
-            }).then(function(){
-                settingsSaved();
-            })
-    
-            
-        })    
-    }
-
-   
-    /**
-    * Deletes a site rule from the saved settings
-    */
-    const deleteAllRules = function(){
-        sites = [];
-        return browser.storage.local.set({
-            sites: []
-        });
-    }
-
-    /**
      * Handles zoom events to create new rules automatically
      * @param {*} zoomChangeInfo 
      */
     function handleZoomed(zoomChangeInfo) {  
-         /**
-         * The settimeout its because firefox triggers multiple times the zoomhandler when the zoom 
-         * changes, say if I were to set it to 0.9 this is what happens SOMETIMES
-         * 0.9
-         * 1
-         * 0.9
+        /**
+         * Check that the zoom event comes from the active tab
          */
-        if(tabCompleteList[zoomChangeInfo.tabId]){
-            let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
-            let url = tabCompleteList[zoomChangeInfo.tabId].url;
-            let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
-            
-            /**
-             * If the zoom level for the tab is different from the main zoom level create a rule
-             * otherwise delete the rule previously create if any
-             */
-            if(parseInt(zoomLevel) !== zoom){
-                saveCustomSiteRule({
-                    zoom: zoom,
-                    domain: currentHostname,
-                    partial: false,
-                    regexp: false
-                }).then(function(){
-                    changeZoomInAllTabs(zoomChangeInfo.tabId);
-                })
-            }else{
-                deleteCustomSiteRule({
-                    domain: currentHostname,
-                       partial: false,
-                    regexp: false
-                }).then(function(){
-                    changeZoomInAllTabs(zoomChangeInfo.tabId);
-                })
-            }            
-        }
+        browser.tabs.query({active: true, windowId: browser.windows.WINDOW_ID_CURRENT}).then(function(currentTab){
+            if(currentTab[0].id === zoomChangeInfo.tabId){
+                /**
+                 * The settimeout its because firefox triggers multiple times the zoomhandler when the zoom 
+                 * changes, say if I were to set it to 0.9 this is what happens SOMETIMES
+                 * 0.9
+                 * 1
+                 * 0.9
+                */
+                if(tabCompleteList[zoomChangeInfo.tabId]){
+                    let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
+                    let url = tabCompleteList[zoomChangeInfo.tabId].url;
+                    let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
+                    
+                    /**
+                     * If the zoom level for the tab is different from the main zoom level create a rule
+                     * otherwise delete the rule previously create if any
+                     */
+                    if(extSettings.mainMonitor.zoomLevel !== zoom){
+                        saveCustomSiteRule({
+                            zoom: zoom,
+                            domain: currentHostname,
+                            partial: false,
+                            regexp: false
+                        })
+                    }else{
+                        deleteCustomSiteRule({
+                            domain: currentHostname,
+                            partial: false,
+                            regexp: false
+                        })
+                    }            
+                } 
+            }
+        });
     }
     
     browser.runtime.onMessage.addListener((message, sender) => {
@@ -398,15 +412,17 @@
                 });
                 break;
             case "deleteAllRules":
-                deleteAllRules().then(function(){
+                extSettings.deleteAllRules().then(function(){
                     changeZoomInAllTabs();
                 })
                 break;
             case "setAllowRegexp":
-                saveAllowRegexp(message.allowRegexp);
+                extSettings.saveAllowRegexpStorage(message.allowRegexp);
                 break;
             case "setAllowAutoRule":
-                saveAllowAutoRule(message.allowAutoRule);
+                extSettings.saveAllowAutoRuleStorage(message.allowAutoRule).then(function(){
+                    setZoomChangeHandlers();
+                });
                 break;
             case "settingsSaved":
                 settingsSaved();
@@ -414,7 +430,7 @@
         }
     });
     
-    if(!scriptInitialized){        
+    if(!extSettings.scriptInitialized){        
         loadSettings().then(function () {
             enableSettings();
         });
