@@ -41,7 +41,7 @@
 		"message": ""
 	},
 	"restoreButton": {
-		"message": "Restaurar el zoom al 100%",
+		"message": "Restaurar pestañas abiertas al 100%",
 		"description": "Devuelve todas las pestañas nuevamente al zoom predeterminado"
 	},
 	"newRuleFor": {
@@ -109,5 +109,8 @@
 	},
 	"advancedSettingsAutoRuleTitle":{
 		"message": "Crear una regla al cambiar el zoom manualmente"
+	},
+	"deleteAllRulesBtn":{
+		"message": "Borrar Todo"
 	}
 }

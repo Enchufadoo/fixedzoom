@@ -45,6 +45,7 @@ button{
 }
 
 
+
 .zoomButton{
   transition: all .2s!important;
   font-family: 'Ropa Sans', sans-serif;
@@ -189,4 +190,15 @@ button{
   
 }
 
+#deleteAllRules{
+  font-size: 14px;
+  color: red;
+  font-weight: 400;
+  line-height: 22px;
+  transition: all .2s;
+}
 
+#deleteAllRules:hover{
+  transition: all .2s;
+  filter: grayscale(1)
+}

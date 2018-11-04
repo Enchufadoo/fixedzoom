@@ -41,7 +41,7 @@
 		"message": "switch"
 	},
 	"restoreButton": {
-		"message": "Restore zoom to 100%",
+		"message": "Restore current tabs to 100%",
 		"description": "Restores all tabs back to the default zoom"
 	},
 	"newRuleFor": {
@@ -108,5 +108,8 @@
 	},
 	"advancedSettingsAutoRuleTitle":{
 		"message": "Save site rule on manual zoom change"
+	},
+	"deleteAllRulesBtn":{
+		"message": "Delete All Rules"
 	}
 }

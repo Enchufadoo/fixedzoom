@@ -6,9 +6,6 @@
     let sites = [];
     let tabUrlZoomList = {};
     let tabCompleteList = {};
-    let saveZoomRuleTimer = false;
-    let reenableAutoZoomTimer = false;
-    let autoZoomReenabled = true;
     let allowRegexp = false;
     let allowAutoRule = false;
     
@@ -67,22 +64,20 @@
         });
     }
     
-    /**
-     * Apply the zoom to all tabs
-     * @param {tabs}  
-     */
-    const changeZoomInTabs = function(tabs) {   
-        for (let tab of tabs) {
-            changeZoomInSingleTab(tab)
-        }
-    }
-    
+        
     /**
      * Change the zoom in all browser tabs (after settings are loaded)
+     * @param {integer} exceptTabId dont change the zoom in that particular tab
      */
-    const changeZoomInAllTabs = function() {
+    const changeZoomInAllTabs = function(exceptTabId = false) {
         var querying = browser.tabs.query({});
-        querying.then(changeZoomInTabs, onError);
+        querying.then(function(tabs){
+            for (let tab of tabs) {
+                if(tab.id !== exceptTabId){
+                    changeZoomInSingleTab(tab)
+                }
+            }
+        }, onError);
     }
     
     /**
@@ -131,20 +126,7 @@
             tabUrlZoomList[tab.id] = matchZoom;
         }
         
-        let newZoom = tabUrlZoomList[tab.id] || zoomLevel;
-        
-        /**
-         * If I don't do this the change in zoom done by the extension
-         * triggers a zoom change event that I can't differentiate
-         * from the users zoom change event
-         */
-        if(allowAutoRule){
-            autoZoomReenabled = false;
-            if(reenableAutoZoomTimer) clearTimeout(reenableAutoZoomTimer);
-            reenableAutoZoomTimer = setTimeout(function(){
-                autoZoomReenabled = true;
-            }, 500)
-        }
+        let newZoom = tabUrlZoomList[tab.id] || zoomLevel;        
         browser.tabs.setZoom(tab.id, newZoom / 100); 
     }
     
@@ -176,8 +158,7 @@
                 else{
                     tabCompleteList[tabId] = undefined;
                 }
-            }       
-            
+            }            
             changeZoomInSingleTab(tab);
         }
     }
@@ -270,7 +251,7 @@
                 })            
             }
             newSites.push(newRule);
-    
+            sites = newSites;
             return browser.storage.local.set({
                 sites: newSites
             });
@@ -291,7 +272,8 @@
                         let same = !!site.partial === !!siteToDelete.partial && !!site.regexp === !!siteToDelete.regexp;
                         return !same;
                     }
-                });      
+                });
+                sites = newSites;      
                 return browser.storage.local.set({
                     sites: newSites
                 });
@@ -340,17 +322,22 @@
         })    
     }
 
+   
+    /**
+    * Deletes a site rule from the saved settings
+    */
+    const deleteAllRules = function(){
+        sites = [];
+        return browser.storage.local.set({
+            sites: []
+        });
+    }
+
     /**
      * Handles zoom events to create new rules automatically
      * @param {*} zoomChangeInfo 
      */
     function handleZoomed(zoomChangeInfo) {  
-         /**
-         * if there's a pending zoom change by the extension don't use the event
-         */
-         if(!autoZoomReenabled){
-             return; 
-         }
          /**
          * The settimeout its because firefox triggers multiple times the zoomhandler when the zoom 
          * changes, say if I were to set it to 0.9 this is what happens SOMETIMES
@@ -358,43 +345,47 @@
          * 1
          * 0.9
          */
-
         if(tabCompleteList[zoomChangeInfo.tabId]){
-            if(saveZoomRuleTimer) clearTimeout(saveZoomRuleTimer);
-            saveZoomRuleTimer = setTimeout(function(){
-                let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
-                let url = tabCompleteList[zoomChangeInfo.tabId].url;
-                let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
-                
-                let retSave = saveCustomSiteRule({
+            let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
+            let url = tabCompleteList[zoomChangeInfo.tabId].url;
+            let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
+            
+            /**
+             * If the zoom level for the tab is different from the main zoom level create a rule
+             * otherwise delete the rule previously create if any
+             */
+            if(parseInt(zoomLevel) !== zoom){
+                saveCustomSiteRule({
                     zoom: zoom,
                     domain: currentHostname,
                     partial: false,
                     regexp: false
-                }).then();
-
-                Promise.resolve(retSave).then(() => {
-                    settingsSaved();
+                }).then(function(){
+                    changeZoomInAllTabs(zoomChangeInfo.tabId);
                 })
-
-            }, 200);          
+            }else{
+                deleteCustomSiteRule({
+                    domain: currentHostname,
+                       partial: false,
+                    regexp: false
+                }).then(function(){
+                    changeZoomInAllTabs(zoomChangeInfo.tabId);
+                })
+            }            
         }
-        
     }
     
     browser.runtime.onMessage.addListener((message, sender) => {
         switch (message.method) {
             case "saveCustomSiteRule":
-                let retSave = saveCustomSiteRule(message.site);
-                Promise.resolve(retSave).then(() => {
+                saveCustomSiteRule(message.site).then(function(){
                     settingsSaved();
                 })
                 break;
             case "deleteCustomSiteRule":
-                let retDel = deleteCustomSiteRule(message.site);
-                Promise.resolve(retDel).then(() => {
+                deleteCustomSiteRule(message.site).then(function(){
                     settingsSaved();
-                })                
+                });
                 break;
             case "getCurrentUrl":
                 return getCurrentUrl();
@@ -405,6 +396,11 @@
                 browser.tabs.create({
                     "url": "/management/management.html"
                 });
+                break;
+            case "deleteAllRules":
+                deleteAllRules().then(function(){
+                    changeZoomInAllTabs();
+                })
                 break;
             case "setAllowRegexp":
                 saveAllowRegexp(message.allowRegexp);
@@ -418,12 +414,9 @@
         }
     });
     
-    
-    if(!scriptInitialized){
-        
+    if(!scriptInitialized){        
         loadSettings().then(function () {
             enableSettings();
         });
-    }       
-         
+    }         
 })();

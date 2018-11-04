@@ -104,6 +104,7 @@ let sitesListDiv = document.querySelector("#sitesList");
 let sitesListContainer = document.querySelector("#sitesListContainer");
 let regexpCheckbox = document.querySelector("#regexpCheckbox");
 let regexpContainer = document.querySelector("#regexpContainer");
+let deleteAllRulesBtn = document.querySelector("#deleteAllRules");
 
 // -------------------------------------------------------
 // Funcions to handle DOM Events
@@ -261,6 +262,14 @@ function trimSpecial(s, mask) {
         s = s.slice(0, -1);
     }
     return s;
+}
+
+const deleteAllRulesHandler = function(){
+    browser.runtime.sendMessage({
+        method: "deleteAllRules",
+    }).then(function(){
+        loadSavedSettings();
+    });    
 }
 
 const makeSitesList = function(){
@@ -447,3 +456,4 @@ zoomLevelInput.addEventListener('input', setZoom);
 addNewRuleBtn.addEventListener("click", addNewRule);
 partialRuleBtn.addEventListener("click", showPartialInstructions);
 regexpCheckbox.addEventListener("change", setRegularExpression);
+deleteAllRulesBtn.addEventListener("click", deleteAllRulesHandler);
