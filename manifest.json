@@ -2,12 +2,11 @@
   "description": "Extension that sets a default fixed zoom for all pages in Firefox",
   "manifest_version": 2,
   "name": "Fixed Zoom",
-  "version": "1.8",
+  "version": "1.9.8",
   "homepage_url": "https://github.com/Enchufadoo/fixedzoom",
   "icons": {
     "64": "icons/binoculars.png"
   },
-  
   "background": {
     "scripts": [
       "background.js"
@@ -20,7 +19,8 @@
   "content_scripts": [{
     "run_at": "document_start",
     "match_about_blank": true,
-    "matches": ["<all_urls>"]
+    "matches": ["<all_urls>"],
+    "js": ["shortcuts.js"]
   }],
   "browser_action": {
     "default_icon": "icons/binoculars.png",

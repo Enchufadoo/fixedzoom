@@ -1,5 +1,8 @@
 (function(){
     const LOG_CONST = 'FIXEDZOOM ERROR: ';
+    const MORE_ZOOM_CONSTANT = "MORE_ZOOM";
+    const LESS_ZOOM_CONSTANT = "LESS_ZOOM";
+    const ZOOM_SHORTCUT_STEP = 5;
     
     class Settings{
         constructor(){
@@ -8,14 +11,27 @@
             this.allowRegexp = false;
             this.allowAutoRule = false;
             this.allowMultipleMonitors = false;
+            this.allowKeyboardShortcut = false;
             this.sites = [];
             this.mainMonitor = {
                 dpi: false,
                 zoomLevel: 100,            
             }
         }
-        
      
+        /**
+         * Saves a new zoom level
+         * @param {*} sites 
+         */
+        saveZoomLevel(zoomLevel){
+            if(zoomLevel >= 30 && zoomLevel <= 300){
+                this.mainMonitor.zoomLevel = zoomLevel;
+                return browser.storage.local.set({
+                    zoomLevel: zoomLevel
+                });
+            }            
+        }
+
         /**
          * Saves the new sites rules array
          * @param {*} sites 
@@ -29,24 +45,14 @@
         }
 
         /**
-         * Saves wheter or not allow regular expressions
-         * @param {*} allowRegexp 
-        */
-        saveAllowRegexpStorage(allowRegexp){
-            this.allowRegexp = allowRegexp;
+         * Save a setting in the storage
+         * @param {string} setting 
+         * @param {*} value 
+         */
+        saveAdvancedSetting(setting, value){
+            this[setting] = value;
             return browser.storage.local.set({
-                allowRegexp: allowRegexp
-            })   
-        }
-
-        /**
-         * Saves wheter or not allow automatic rules when there's a zoom change
-         * @param {*} allowRegexp 
-        */
-        saveAllowAutoRuleStorage(allowAutoRule){
-            this.allowAutoRule = allowAutoRule;
-            return browser.storage.local.set({
-                allowAutoRule: allowAutoRule
+                [setting]: value
             })   
         }
 
@@ -115,6 +121,10 @@
                 extSettings.allowAutoRule = settings.allowAutoRule;
             } 
 
+            if(settings.allowKeyboardShortcut){ 
+                extSettings.allowKeyboardShortcut = settings.allowKeyboardShortcut;
+            } 
+
             extSettings.enabled = settings.enabled;
             extSettings.mainMonitor.zoomLevel = parseInt(settings.zoomLevel);
         });
@@ -129,6 +139,7 @@
         querying.then(function(tabs){
             for (let tab of tabs) {
                 if(tab.id !== exceptTabId){
+                    
                     changeZoomInSingleTab(tab)
                 }
             }
@@ -186,6 +197,8 @@
     }
     
     const tabUpdateListener = function(tabId, info, tab) {
+        
+       
         /**
          * This gets called many times, but if I dont do it 
          * the zoom wont be applied on page load which means 
@@ -388,6 +401,18 @@
             }
         });
     }
+
+    /**
+     * Modify the extension zoom from a keyboard shortcut
+     * @param {*} zoomChange 
+     */
+    const changeZoomFromShortcut = function(zoomChange){
+        if(zoomChange == MORE_ZOOM_CONSTANT){
+            return extSettings.saveZoomLevel(extSettings.mainMonitor.zoomLevel + ZOOM_SHORTCUT_STEP)
+        }else if(zoomChange == LESS_ZOOM_CONSTANT){
+            return extSettings.saveZoomLevel(extSettings.mainMonitor.zoomLevel - ZOOM_SHORTCUT_STEP)
+        }
+    }
     
     browser.runtime.onMessage.addListener((message, sender) => {
         switch (message.method) {
@@ -417,16 +442,43 @@
                 })
                 break;
             case "setAllowRegexp":
-                extSettings.saveAllowRegexpStorage(message.allowRegexp);
+                extSettings.saveAdvancedSetting('allowRegexp', message.value);
                 break;
             case "setAllowAutoRule":
-                extSettings.saveAllowAutoRuleStorage(message.allowAutoRule).then(function(){
+                extSettings.saveAdvancedSetting('allowAutoRule', message.value).then(function(){
                     setZoomChangeHandlers();
                 });
+                break;
+            case "saveAllowShortcut":
+                extSettings.saveAdvancedSetting('allowKeyboardShortcut', message.value).then(function(){
+                    // tell the tabs to reload the option value
+                    var querying = browser.tabs.query({});
+                    querying.then(function(tabs){
+                        for (let tab of tabs) {
+                            browser.tabs.sendMessage(
+                                tab.id,
+                                {message: "refreshShortcutsEnabled"}
+                              )
+                        }
+                    }, onError);
+                });
+                break;
+            case "getShortcutsEnabled":
+                return new Promise((resolve, reject) => {
+                    return resolve(extSettings.allowKeyboardShortcut);
+                });
+            case "zoomFromShortcut":
+                let resShor = changeZoomFromShortcut(message.zoomChange);
+                if(resShor){
+                    resShor.then(function(){
+                        changeZoomInAllTabs();
+                    });
+                }
                 break;
             case "settingsSaved":
                 settingsSaved();
                 break;
+            
         }
     });
     

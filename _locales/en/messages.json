@@ -111,5 +111,11 @@
 	},
 	"deleteAllRulesBtn":{
 		"message": "Delete All Rules"
+	},
+	"shortcutKeysTitle":{
+		"message": "Keyboard Shortcut"
+	},
+	"shortcutKeysLabel":{
+		"message": "Change the extension zoom with CTRL ALT + and CTRL ALT -"
 	}
 }

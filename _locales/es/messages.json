@@ -112,5 +112,11 @@
 	},
 	"deleteAllRulesBtn":{
 		"message": "Borrar Todo"
+	},
+	"shortcutKeysTitle":{
+		"message": "Atajos del Teclado"
+	},
+	"shortcutKeysLabel":{
+		"message": "Cambiar el zoom de la extensióñ con CTRL ALT + y CTRL ALT -"
 	}
 }

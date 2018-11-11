@@ -1,5 +1,6 @@
 let allowRegexpCb = document.querySelector("#allowRegexpCb");
 let allowAutoRuleCb = document.querySelector("#allowAutoRuleCb");
+let allowShortcutCb = document.querySelector("#allowShortcutCb");
 
 window.onload = function(){
   // can't think of anything else not to show the switch animation on page load
@@ -8,8 +9,7 @@ window.onload = function(){
     
     for (i = 0; i < switche.length; ++i) {
       switche[i].classList.remove('preload');    
-    }
-    
+    }    
   }, 500)    
 
   loadSavedSettings();
@@ -19,19 +19,11 @@ window.onload = function(){
 /**
  * Loads saved settings
  */
-function loadSavedSettings() {
-  function setCurrentChoice(result) {
-      if(result.allowRegexp){
-        allowRegexpCb.checked = true;
-      }else{
-        allowRegexpCb.checked = false;
-      }
-
-      if(result.allowAutoRule){
-        allowAutoRuleCb.checked = true;
-      }else{
-        allowAutoRuleCb.checked = false;
-      }
+function loadSavedSettings(){
+  function setCurrentChoice(result){
+    allowRegexpCb.checked = !!result.allowRegexp;
+    allowAutoRuleCb.checked = !!result.allowAutoRule;
+    allowShortcutCb.checked = !!result.allowKeyboardShortcut;
   }
 
   function onError(error) {
@@ -42,14 +34,13 @@ function loadSavedSettings() {
   getting.then(setCurrentChoice, onError);
 }
 
-
 /**
  * Save in settings wheter or not to allow regular expressions
  */
 const saveRegexp = function() {  
   browser.runtime.sendMessage({
     method: "setAllowRegexp",
-    allowRegexp: allowRegexpCb.checked
+    value: this.checked
   });
 }
 
@@ -60,10 +51,21 @@ const saveRegexp = function() {
 const saveAutoRule = function() {  
   browser.runtime.sendMessage({
     method: "setAllowAutoRule",
-    allowAutoRule: allowAutoRuleCb.checked
+    value: this.checked
   });
 }
 
+/**
+ * Save allowing a keyboard shortcut to change the extensions zoom
+ */
+const saveAllowShortcut = function() {  
+ browser.runtime.sendMessage({
+   method: "saveAllowShortcut",
+   value: this.checked
+ });
+}
+
+
 allowRegexpCb.addEventListener('change', saveRegexp);
 allowAutoRuleCb.addEventListener('change', saveAutoRule);
-
+allowShortcutCb.addEventListener('change', saveAllowShortcut);
