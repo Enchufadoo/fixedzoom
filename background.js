@@ -3,6 +3,9 @@
     const MORE_ZOOM_CONSTANT = "MORE_ZOOM";
     const LESS_ZOOM_CONSTANT = "LESS_ZOOM";
     const ZOOM_SHORTCUT_STEP = 5;
+
+    const COLOR_BLACK = 'black';
+    const COLOR_WHITE = 'white';
     
     class Settings{
         constructor(){
@@ -12,6 +15,7 @@
             this.allowAutoRule = false;
             this.allowMultipleMonitors = false;
             this.allowKeyboardShortcut = false;
+            this.iconColor = COLOR_BLACK;
             this.sites = [];
             this.mainMonitor = {
                 dpi: false,
@@ -54,6 +58,18 @@
             return browser.storage.local.set({
                 [setting]: value
             })   
+        }
+
+        /**
+         * Change the extension icon when the value is set
+         */
+        set iconColor(value){
+            if(value === COLOR_BLACK){
+                browser.browserAction.setIcon({path: "icons/binoculars_black.png"});
+            }else{
+                browser.browserAction.setIcon({path: "icons/binoculars_white.png"});
+            }
+            
         }
 
         /**
@@ -124,6 +140,11 @@
             if(settings.allowKeyboardShortcut){ 
                 extSettings.allowKeyboardShortcut = settings.allowKeyboardShortcut;
             } 
+            /**
+             * Black icon by default
+             */
+            extSettings.iconColor = settings.iconColor ? settings.iconColor : COLOR_BLACK;
+            
 
             extSettings.enabled = settings.enabled;
             extSettings.mainMonitor.zoomLevel = parseInt(settings.zoomLevel);
@@ -413,7 +434,7 @@
             return extSettings.saveZoomLevel(extSettings.mainMonitor.zoomLevel - ZOOM_SHORTCUT_STEP)
         }
     }
-    
+
     browser.runtime.onMessage.addListener((message, sender) => {
         switch (message.method) {
             case "saveCustomSiteRule":
@@ -443,6 +464,9 @@
                 break;
             case "setAllowRegexp":
                 extSettings.saveAdvancedSetting('allowRegexp', message.value);
+                break;
+            case "setIconColor":
+                extSettings.saveAdvancedSetting('iconColor', message.value);
                 break;
             case "setAllowAutoRule":
                 extSettings.saveAdvancedSetting('allowAutoRule', message.value).then(function(){
@@ -482,8 +506,9 @@
         }
     });
     
-    if(!extSettings.scriptInitialized){        
+    if(!extSettings.scriptInitialized){
         loadSettings().then(function () {
+            
             enableSettings();
         });
     }         

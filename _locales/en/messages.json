@@ -117,5 +117,14 @@
 	},
 	"shortcutKeysLabel":{
 		"message": "Change the extension zoom with CTRL ALT + and CTRL ALT -"
+	},
+	"iconColorTitle":{
+		"message": "Extension Icon"
+	},
+	"blackIconOption":{
+		"message": "Black icon"
+	},
+	"whiteIconOption":{
+		"message": "White icon"
 	}
 }

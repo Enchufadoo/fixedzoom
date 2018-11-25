@@ -1,6 +1,12 @@
 let allowRegexpCb = document.querySelector("#allowRegexpCb");
 let allowAutoRuleCb = document.querySelector("#allowAutoRuleCb");
 let allowShortcutCb = document.querySelector("#allowShortcutCb");
+let blackIconCb = document.querySelector("#blackIcon");
+let whiteIconCb = document.querySelector("#whiteIcon");
+let colorCb = document.querySelectorAll(".iconColor");
+
+const COLOR_BLACK = 'black';
+const COLOR_WHITE = 'white';
 
 window.onload = function(){
   // can't think of anything else not to show the switch animation on page load
@@ -24,6 +30,12 @@ function loadSavedSettings(){
     allowRegexpCb.checked = !!result.allowRegexp;
     allowAutoRuleCb.checked = !!result.allowAutoRule;
     allowShortcutCb.checked = !!result.allowKeyboardShortcut;
+    
+    if(typeof result.iconColor === 'undefined' || !result.iconColor || result.iconColor === COLOR_BLACK){
+      blackIconCb.checked = true;
+    }else{
+      whiteIconCb.checked = true;
+    }
   }
 
   function onError(error) {
@@ -65,7 +77,19 @@ const saveAllowShortcut = function() {
  });
 }
 
+/**
+ * Change one of the two icons available
+ */
+const saveIconColor = function(){
+  browser.runtime.sendMessage({
+    method: "setIconColor",
+    value: blackIconCb.checked ? COLOR_BLACK : COLOR_WHITE
+  });
+}
 
 allowRegexpCb.addEventListener('change', saveRegexp);
 allowAutoRuleCb.addEventListener('change', saveAutoRule);
 allowShortcutCb.addEventListener('change', saveAllowShortcut);
+Array.from(colorCb).forEach(function(element) {
+  element.addEventListener('change', saveIconColor);
+});
