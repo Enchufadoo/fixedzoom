@@ -99,7 +99,7 @@
 		"message": "Configuración"
 	},
 	"advancedSettingsRegexTitle": {
-		"message": "Permitir crear reglas con expresions regulares"
+		"message": "Permitir crear reglas con expresiones regulares"
 	},
 	"regexpLabel": {
 		"message": "Expresiones Regulares"
