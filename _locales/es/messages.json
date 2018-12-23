@@ -61,7 +61,7 @@
 	"rulesBySiteTitle": {
 		"message": "Reglas de Zoom Diferenciadas por Sitio"
 	},
-	
+
 	"rulesBySiteSubheader": {
 		"message": "Crea un nivel de zoom diferente para un sitio"
 	},
@@ -80,52 +80,52 @@
 	"rulesBySiteListTitle": {
 		"message": "Lista de reglas creadas"
 	},
-	"partialRuleButton":{
+	"partialRuleButton": {
 		"message": "Deseas agregar reglas mas complejas?"
 	},
-	"partialRuleDescription":{
+	"partialRuleDescription": {
 		"message": "Si solo deseas corresponder parte de la direccion, por ejemplo todos los dominios que contengan la palabra fruta, comienza la palabra con el símbolo #. Por ejemplo #fruta coincidiria con muchafruta.com y también con reddit.com/r/fruta."
 	},
-	"partialRuleCarefully":{
+	"partialRuleCarefully": {
 		"message": "Usalo con cuidado!"
 	},
-	"managemetRegexLabel":{
+	"managemetRegexLabel": {
 		"message": "Expresión Regular"
 	},
-	"advancedSettingsLabel":{
+	"advancedSettingsLabel": {
 		"message": "Configuración Avanzada"
 	},
-	"settingsLabel":{
+	"settingsLabel": {
 		"message": "Configuración"
 	},
-	"advancedSettingsRegexTitle":{
+	"advancedSettingsRegexTitle": {
 		"message": "Permitir crear reglas con expresions regulares"
 	},
-	"regexpLabel":{
+	"regexpLabel": {
 		"message": "Expresiones Regulares"
 	},
-	"autoRuleLabel":{
+	"autoRuleLabel": {
 		"message": "Reglas Automaticas"
 	},
-	"advancedSettingsAutoRuleTitle":{
+	"advancedSettingsAutoRuleTitle": {
 		"message": "Crear una regla al cambiar el zoom manualmente"
 	},
-	"deleteAllRulesBtn":{
+	"deleteAllRulesBtn": {
 		"message": "Borrar Todo"
 	},
-	"shortcutKeysTitle":{
+	"shortcutKeysTitle": {
 		"message": "Atajos del Teclado"
 	},
-	"shortcutKeysLabel":{
-		"message": "Cambiar el zoom de la extensióñ con CTRL ALT + y CTRL ALT -"
+	"shortcutKeysLabel": {
+		"message": "Cambiar el zoom de la extensión con CTRL ALT + y CTRL ALT -"
 	},
-	"iconColorTitle":{
+	"iconColorTitle": {
 		"message": "Icono de la Extensión"
 	},
-	"blackIconOption":{
+	"blackIconOption": {
 		"message": "Icono negro"
 	},
-	"whiteIconOption":{
+	"whiteIconOption": {
 		"message": "Icono blanco"
 	}
 }
