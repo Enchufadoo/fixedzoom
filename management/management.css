@@ -1,72 +1,73 @@
-.container{
-    min-height: 100vh;
-    height: 100%;
-    background-color: rgba(199,199,199, 0.2);
-    padding: 40px 28px;
+.container {
+  min-height: 100vh;
+  height: 100%;
+  background-color: rgba(199, 199, 199, 0.2);
+  padding: 40px 28px;
 }
 
-button{
-    margin: 0;
+button {
+  margin: 0;
 }
 
-.basicSep{
+.basicSep {
   margin-bottom: 4px;
 }
-.longSep{
-    margin-top: 20px;
+
+.longSep {
+  margin-top: 20px;
 }
 
-.miniHeader{
-    font-size: 17px;
-    font-weight: 600;
+.miniHeader {
+  font-size: 17px;
+  font-weight: 600;
 }
 
-.domainExample{
-    color: grey;
+.domainExample {
+  color: grey;
 }
 
-.buttonBox{
-    padding-right: 10px;
-    padding-left: 10px;
+.buttonBox {
+  padding-right: 10px;
+  padding-left: 10px;
 }
 
-#zoomControlsContainer{
+#zoomControlsContainer {
   display: flex;
   justify-content: space-between;
-  
+
 }
 
-#zoomLevelCont{
+#zoomLevelCont {
   line-height: 35px;
 }
 
-.newSiteContainer{
+.newSiteContainer {
   max-width: 300px;
 }
 
 
 
-.zoomButton{
-  transition: all .2s!important;
+.zoomButton {
+  transition: all .2s !important;
   font-family: 'Ropa Sans', sans-serif;
   min-height: 20px;
   min-width: 40px;
   background-color: white;
   paddding: 10px 20px;
   display: inline-block;
-  border-radius: 2px!important;
-  background-color: #fff!important;
+  border-radius: 2px !important;
+  background-color: #fff !important;
   font-size: 8px;
   position: relative;
-  color: #3498db!important;   
-  border: 1px solid #3498db!important;
+  color: #3498db !important;
+  border: 1px solid #3498db !important;
 }
 
 /* im overriding the firefox style rules*/
-.zoomButton:hover{
-  transition: all .2s!important;
-  background-color: #3498db!important;
-  color: white!important;
+.zoomButton:hover {
+  transition: all .2s !important;
+  background-color: #3498db !important;
+  color: white !important;
 }
 
 
@@ -75,7 +76,7 @@ button{
   transition: all .2s linear;
   content: "";
   display: block;
-  background-color:#3498db;
+  background-color: #3498db;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -103,22 +104,22 @@ button{
   width: 1em;
 }
 
-#domainName{
+#domainName {
   width: 100%;
 }
 
-#noRulesCreated{
+#noRulesCreated {
   background: white;
   padding: 10px 10px;
   width: 300px;
 }
 
-.savedSite{
+.savedSite {
   display: flex;
   margin: 4px 0;
 }
 
-.flexZero{
+.flexZero {
   flex: 0;
 }
 
@@ -126,71 +127,67 @@ button{
   flex: 1;
 }
 
-.icon{
+.icon {
   transition: all .2s;
   width: 13px;
   height: 13px;
 }
 
-.icon:hover{
+.icon:hover {
   transition: all .2s;
   filter: grayscale(1)
 }
 
 
-.removeIconDiv{
+.removeIconDiv {
   margin-left: 8px;
 }
 
-#sitesList{
+#sitesList {
   max-width: 400px;
 }
 
-.hide{
+.hide {
   display: none;
 }
 
-.disabledOption {
-  pointer-events: none;
-  filter: opacity(50%);
+
+.errorInput {
+  border-color: red !important;
 }
 
-.errorInput{
-  border-color: red!important;
-}
-
-.validInput{
+.validInput {
   border-color: green !important;
 }
 
-.partialDomain{
+.partialDomain {
   font-variant: small-caps;
-  color:#6b6b6b;
+  color: #6b6b6b;
   font-style: italic;
   text-align: right;
   padding-right: 10px;
   float: right;
 }
 
-#partialRuleDescription{
+#partialRuleDescription {
   display: none;
   max-width: 600px;
-  padding: 10px 0px ;
+  padding: 10px 0px;
 }
 
-#regexpMarkButton{
+#regexpMarkButton {
   font-weight: bold;
   font-size: 16px;
 }
 
-#regexpLabel{
+#regexpLabel {
 
   line-height: 23px;
   font-size: 13px;
-  
+
 }
 
-#deleteAllRules{
+#deleteAllRules {
   font-size: 14px;
   color: red;
   font-weight: 400;
@@ -198,7 +195,7 @@ button{
   transition: all .2s;
 }
 
-#deleteAllRules:hover{
+#deleteAllRules:hover {
   transition: all .2s;
   filter: grayscale(1)
 }

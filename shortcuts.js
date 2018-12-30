@@ -4,7 +4,6 @@
   const MORE_ZOOM_CONSTANT = "MORE_ZOOM";
   const LESS_ZOOM_CONSTANT = "LESS_ZOOM";
 
-  const GET_SHORTCUTS_ENABLED = "getShortcutsEnabled";
   const REFRESH_SHORTCUTS_ENABLED = "refreshShortcutsEnabled";
   /**
    * When ctrl alt + / - gets pressed request a zoom change
@@ -12,7 +11,6 @@
    * @param {*} event 
    */
   const keyHandler = function (event) {
-    console.log(event.key)
     if (event.ctrlKey && event.altKey) {
       if ((event.keyCode == PLUS_SIGN) || (event.key === '+')) {
         browser.runtime.sendMessage({
@@ -32,7 +30,8 @@
    */
   const getShortcutsEnabled = function () {
     browser.runtime.sendMessage({
-      method: GET_SHORTCUTS_ENABLED,
+      method: 'getSetting',
+      value: 'allowKeyboardShortcut'
     }).then(function (enabled) {
       if (enabled) {
         document.addEventListener('keyup', keyHandler, false);

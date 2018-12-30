@@ -1,0 +1,4 @@
+.disabledOption {
+  pointer-events: none;
+  filter: opacity(50%);
+}

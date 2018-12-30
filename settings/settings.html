@@ -18,76 +18,109 @@
 </head>
 
 <body>
-  <form class="form-gray settings">
-    <div class="zoomRules">
-      <div class="basicSep">
-        <div class="littleHeader">
-          <span data-i18n="regexpLabel"></span>
-          <a href="../options/options.html" id="backArrow" class="link"><span data-i18n="goBackBtn"></span></a>
+  <form class="form-gray settings" style="max-width: none">
+
+    <div style="display: flex">
+      <div class="columnLeft">
+        <div class="zoomRules">
+          <div class="basicSep">
+            <div class="littleHeader">
+
+              <span data-i18n="regexpLabel"></span>
+
+            </div>
+
+            <div class="settingExplanation">
+              <span data-i18n="advancedSettingsRegexTitle"></span>
+            </div>
+          </div>
+          <div>
+            <div style="flex: 0" class="switchContainer preload">
+              <label class="switch">
+                <input id="allowRegexpCb" type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="zoomRules">
+          <div class="basicSep">
+            <div class="littleHeader">
+              <span data-i18n="shortcutKeysTitle"></span>
+            </div>
+            <div class="settingExplanation">
+              <span data-i18n="shortcutKeysLabel"></span>
+            </div>
+          </div>
+          <div>
+            <div style="flex: 0" class="switchContainer preload">
+              <label class="switch">
+                <input id="allowShortcutCb" type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="zoomRules">
+          <div class="basicSep">
+            <div class="littleHeader">
+              <span data-i18n="allowProfilesLabel">Allow Multiple Profiles</span>
+
+            </div>
+
+            <div class="settingExplanation">
+              <span data-i18n="allowProfilesTitle">Enable multiple zoom profiles for the extension.</span>
+            </div>
+          </div>
+          <div>
+            <div style="flex: 0" class="switchContainer preload">
+              <label class="switch">
+                <input id="allowProfilesCb" type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="columnRight">
+
+        <div class="zoomRules">
+          <div class="basicSep">
+            <div class="littleHeader">
+              <span data-i18n="autoRuleLabel"></span>
+              <a href="../options/options.html" id="backArrow" class="link"><span data-i18n="goBackBtn"></span></a>
+            </div>
+
+            <div class="settingExplanation">
+              <span data-i18n="advancedSettingsAutoRuleTitle"></span>
+            </div>
+          </div>
+          <div>
+            <div style="flex: 0" class="switchContainer preload">
+              <label class="switch">
+                <input id="allowAutoRuleCb" type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="zoomRules">
+          <div class="basicSep">
+            <div class="littleHeader">
+              <span data-i18n="iconColorTitle"></span>
+            </div>
+          </div>
+          <div>
+            <input class="iconColor" id="blackIcon" type="radio" name="iconColor" /><span data-i18n="blackIconOption"></span>
+            <br />
+            <input class="iconColor" id="whiteIcon" type="radio" name="iconColor" /><span data-i18n="whiteIconOption"></span>
+            <br />
+          </div>
         </div>
 
-        <div class="settingExplanation">
-          <span data-i18n="advancedSettingsRegexTitle"></span>
-        </div>
       </div>
-      <div>
-        <div style="flex: 0" class="switchContainer preload">
-          <label class="switch">
-            <input id="allowRegexpCb" type="checkbox" />
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-    <div class="zoomRules">
-      <div class="basicSep">
-        <div class="littleHeader">
-          <span data-i18n="autoRuleLabel"></span>
-        </div>
 
-        <div class="settingExplanation">
-          <span data-i18n="advancedSettingsAutoRuleTitle"></span>
-        </div>
-      </div>
-      <div>
-        <div style="flex: 0" class="switchContainer preload">
-          <label class="switch">
-            <input id="allowAutoRuleCb" type="checkbox" />
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
     </div>
-    <div class="zoomRules">
-      <div class="basicSep">
-        <div class="littleHeader">
-          <span data-i18n="shortcutKeysTitle"></span>
-        </div>
-        <div class="settingExplanation">
-          <span data-i18n="shortcutKeysLabel"></span>
-        </div>
-      </div>
-      <div>
-        <div style="flex: 0" class="switchContainer preload">
-            <label class="switch">
-              <input id="allowShortcutCb" type="checkbox" />
-              <span class="slider round"></span>
-            </label>
-        </div>
-      </div>
-    </div>
-    <div class="zoomRules">
-      <div class="basicSep">
-        <div class="littleHeader">
-          <span data-i18n="iconColorTitle"></span>
-        </div>
-      </div>
-      <div>
-        <input class="iconColor" id="blackIcon" type="radio" name="iconColor" /><span data-i18n="blackIconOption"></span> <br / >
-        <input class="iconColor" id="whiteIcon" type="radio" name="iconColor"  /><span data-i18n="whiteIconOption"></span> <br />
-      </div>
-    </div>
-
   </form>
 
   <script src="settings.js"></script>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://browser/content/extension.css" />
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
+  <link rel="stylesheet" href="../options/options.css" />
+  <link rel="stylesheet" href="../assets/css/common.css" />
+</head>
+
+<body>
+  <form class="form-gray">
+    <div class="zoomRules">
+      <div class="littleHeader">
+        <span data-i18n="">New Profile</span>
+        <a href="../options/options.html" id="backArrow" class="link"><span data-i18n="goBackBtn"></span></a>
+      </div>
+
+      <div style="max-width: 250px; min-width: 250px;">
+        <span data-i18n="">
+          Select a name for the new profile.
+        </span>
+      </div>
+      <div>
+        <input id="profileNameInput" type="text" style="width: 100%" />
+
+      </div>
+
+      <div class="longSep">
+        <button id="createProfileButton" class="accessory-button primary">
+          <span class="buttonBox" data-i18n="">Create Profile</span>
+        </button>
+      </div>
+
+    </div>
+
+  </form>
+
+  <script src="profiles.js"></script>
+  <script src="../internationalization.js"></script>
+</body>
+
+</html>

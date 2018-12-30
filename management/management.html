@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="chrome://browser/content/extension.css" />
   <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
   <link rel="stylesheet" href="management.css" />
+  <link rel="stylesheet" href="../assets/css/common.css" />
 </head>
 
 <body>
@@ -17,21 +18,21 @@
         <span data-i18n="rulesBySiteSubheader"></span>
       </div>
       <span data-i18n="rulesBySiteDescription1">
-      </span>      
+      </span>
       <br />
       <span class="domainExample">yahoo.com</span>)
       <span data-i18n="rulesBySiteDescription2"></span>
       <br />
       <span><a id="partialRuleButton" data-i18n="partialRuleButton"></a></span>
-      <div id="partialRuleDescription"  >
-         <span data-i18n="partialRuleDescription"></span>
-         <b style="color: red" data-i18n="partialRuleCarefully"></b>
+      <div id="partialRuleDescription">
+        <span data-i18n="partialRuleDescription"></span>
+        <b style="color: red" data-i18n="partialRuleCarefully"></b>
         <hr />
       </div>
     </div>
 
     <div class="longSep">
-      
+
       <div>
         <div class="basicSep newSiteContainer">
           <input id="domainName" type="text" data-i18n="rulesBySitePlaceholder|placeholder" />
@@ -39,14 +40,14 @@
       </div>
       <div id="regexpContainer" class="hide">
         <div style="display: flex">
-            <div>
-                <label>
-                    <input id="regexpCheckbox" type="checkbox" /> 
-                    
-                </label>
-            </div>        
-            <div id="regexpLabel" data-i18n="managemetRegexLabel"></div>
-        </div>        
+          <div>
+            <label>
+              <input id="regexpCheckbox" type="checkbox" />
+
+            </label>
+          </div>
+          <div id="regexpLabel" data-i18n="managemetRegexLabel"></div>
+        </div>
       </div>
       <div class="zoomSector newSiteContainer">
         <div id="zoomControlsContainer">
@@ -72,26 +73,26 @@
     </div>
     <div class="longSep" id="sitesListContainer">
       <div class="miniHeader" style="max-width: 400px;">
-        <div style="display: flex"> 
+        <div style="display: flex">
           <div style="flex: 1" data-i18n="rulesBySiteListTitle"></div>
           <div style="display: flex">
-            
+
             <div style="flex: 1" class="link" id="deleteAllRules" data-i18n="deleteAllRulesBtn">
-            
+
             </div>
           </div>
-          
+
         </div>
-        
+
       </div>
 
       <div class="basicSep" id="sitesList"></div>
     </div>
   </div>
-<script src="../vendor/beedle/beedle.js"></script>
+  <script src="../vendor/beedle/beedle.js"></script>
 
-<script src="management.js"></script>
-<script src="../internationalization.js"></script>
+  <script src="management.js"></script>
+  <script src="../internationalization.js"></script>
 </body>
 
 </html>

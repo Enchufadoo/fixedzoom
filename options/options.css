@@ -1,33 +1,29 @@
 html {
   width: 100%;
-  font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif; 
+  font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 }
 
-html, body, .form-gray{
-  
-}
-
-.zoomRules{
+.zoomRules {
   font-size: 17px;
   margin-bottom: 16px;
 }
 
-#enabledLabel{
+#enabledLabel {
   font-size: 17px;
-  
+
 }
 
-.link:hover{
+.link:hover {
   color: black;
 }
 
-.littleHeader{
+.littleHeader {
   font-size: 13px;
   color: #737373;
   margin-bottom: 4px;
 }
 
-a.link{
+a.link {
   text-decoration: none;
   color: #0a84ff;
   cursor: default;
@@ -37,10 +33,10 @@ a.link{
   font-size: 1.2em;
   width: 100%;
   max-width: 450px;
-  
+
   padding: 20px;
   box-sizing: border-box;
-  
+
 }
 
 .form-gray input {
@@ -48,7 +44,7 @@ a.link{
   margin-top: 10px;
 }
 
-#zoomLevel{
+#zoomLevel {
   width: 100%;
 }
 
@@ -83,22 +79,22 @@ a.link{
   -webkit-transition: all .2s linear;
 }
 
-#buttonsContainer{
+#buttonsContainer {
   display: flex;
 }
 
-#zoomLevelLbl{
-  
+#zoomLevelLbl {
+
   flex: 1;
   display: inline-block;
   min-width: 30px;
   width: 100%;
   text-align: center;
-  vertical-align:middle;
+  vertical-align: middle;
   font-size: 22px;
 }
 
-.zoomButton{
+.zoomButton {
   transition: all .2s linear;
   background-color: #fff;
   font-size: 8px;
@@ -110,7 +106,7 @@ a.link{
   transition: all .2s linear;
   content: "";
   display: block;
-  background-color:#3498db;
+  background-color: #3498db;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -137,61 +133,62 @@ a.link{
   height: 0.2em;
   width: 1em;
 }
-#disabledSector{
+
+#disabledSector {
   font-size: 17px;
   margin-top: 16px;
 }
 
-#enabledLabelText{
-  flex: 0; 
+#enabledLabelText {
+  flex: 0;
   margin-left: 15px;
 }
 
-#enabledContainer{
+#enabledContainer {
   display: flex;
   width: 250px;
 }
 
-.basicSep{
+.basicSep {
   margin-bottom: 4px;
 }
-.longSep{
-    margin-top: 20px;
+
+.longSep {
+  margin-top: 20px;
 }
 
-.buttonBox{
+.buttonBox {
   padding-right: 10px;
   padding-left: 10px;
 }
 
-.zoomButton{
-  transition: all .2s!important;
+.zoomButton {
+  transition: all .2s !important;
   font-family: 'Ropa Sans', sans-serif;
   min-height: 20px;
   min-width: 40px;
   background-color: white;
   paddding: 10px 20px;
   display: inline-block;
-  border-radius: 2px!important;
-  background-color: #fff!important;
+  border-radius: 2px !important;
+  background-color: #fff !important;
   font-size: 8px;
   position: relative;
-  color: #3498db!important;   
-  border: 1px solid #3498db!important;
+  color: #3498db !important;
+  border: 1px solid #3498db !important;
 }
 
 /* im overriding the firefox style rules*/
-.zoomButton:hover{
-  transition: all .2s!important;
-  background-color: #3498db!important;
-  color: white!important;
+.zoomButton:hover {
+  transition: all .2s !important;
+  background-color: #3498db !important;
+  color: white !important;
 }
 
-#currentSiteSector{
-  display: none;  
+#currentSiteSector {
+  display: none;
 }
 
-#backArrow{
+#backArrow {
   float: right;
 }
-

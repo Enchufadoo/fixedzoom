@@ -8,17 +8,17 @@
   <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
   <link rel="stylesheet" href="options.css" />
   <link rel="stylesheet" href="switch.css" />
-  
+
 </head>
 
 <body>
   <form class="form-gray">
     <div>
-      <div class="littleHeader" data-i18n="subheaderBrowserZoom">        
+      <div class="littleHeader" data-i18n="subheaderBrowserZoom">
       </div>
       <div id="enabledContainer">
         <div style="flex: 0" class="switchContainer preload">
-          <label id="enabledLabel"  title="Unchecking and saving sets all open tabs' zoom level to 100%"  class="switch">
+          <label id="enabledLabel" title="Unchecking and saving sets all open tabs' zoom level to 100%" class="switch">
             <input id="enabled" type="checkbox" />
             <span class="slider round"></span>
           </label>
@@ -40,30 +40,41 @@
           <button id="plusButton" class="button zoomButton primary"></button>
         </div>
       </div>
+      <div class="longSep" id="profileSelectArea">
+        <div class="littleHeader" data-i18n="profilesLabel">
+          Profiles
+        </div>
+        <div class="basicSep">
+          <select style="margin: 0; padding: 100" id="profileSelect">
+            <option value="defaultProfile">Default Profile</option>
+            <option value="newProfile" id="newProfileButton"><span>+</span> Create a new profile</option>
+          </select>
+        </div>
+      </div>
       <div class="zoomRules longSep">
-        <div class="littleHeader" data-i18n="subheaderZoomRules">          
+        <div class="littleHeader" data-i18n="subheaderZoomRules">
         </div>
         <a id="manageBtn" role="button" class="link" title="Manage Rules" data-i18n="manageRulesButton"></a>
         <div class="basicSep" id="currentSiteSector">
           <a href="../custom_site/custom_site.html" id="createNewRule" role="button" class="link">
             <span data-i18n="newRuleFor"></span> <b><span id="currentUrl"></span></b>
-          </a>    
+          </a>
         </div>
       </div>
       <div class="longSep">
-          <div class="littleHeader" data-i18n="settingsLabel">          
-          </div>
-          <div class="basicSep">
-            <a href="../settings/settings.html" id="createNewRule" role="button" class="link">
-              <span data-i18n="advancedSettingsLabel"></span>
-            </a>    
-          </div>
+        <div class="littleHeader" data-i18n="settingsLabel">
         </div>
-      
+        <div class="basicSep">
+          <a href="../settings/settings.html" id="createNewRule" role="button" class="link">
+            <span data-i18n="advancedSettingsLabel"></span>
+          </a>
+        </div>
+      </div>
     </div>
     <div id="disabledSector">
       <b data-i18n="addonDisabledLabel"></b><br />
-      <span data-i18n="toggleTheLabel"></span> <span data-i18n="enableLabel" style="color: grey"></span> <span data-i18n="checkboxLabel"></span> 
+      <span data-i18n="toggleTheLabel"></span> <span data-i18n="enableLabel" style="color: grey"></span> <span
+        data-i18n="checkboxLabel"></span>
       <div class="longSep">
         <a id="restoreBtn" role="button" class="link" data-i18n="restoreButton"></a>
       </div>
