@@ -2,14 +2,13 @@
 
 Extension that allows you to set a default zoom in Firefox as opposed to 100% that is the default value
 
-## What it does
+## Mozilla Addons Page
 
-Before a page loads it sets the saved zoom value, it works by design only on browsing tabs and not on
-firefox settings, about:config, etc.
+The extension can be obtained here 
+https://addons.mozilla.org/en-US/firefox/addon/fixed-zoom/
 
 ## Does it work?
 
-Sure, but it's my first extension so probably isn't as efficient as it should be.
+It does handle the zoom but Firefox doesn't have the best zoom API so there are limitations in trying to emulate regular zoom behavior. 
 
-
-Icons made by [Gregor Cresnar](https://www.flaticon.com/authors/gregor-cresnar "Gregor Cresnar") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0")
+In case the extension doesn't work as it should there's another one that handles the zoom with very good support: Zoom Page WE https://addons.mozilla.org/en-US/firefox/addon/zoom-page-we/
