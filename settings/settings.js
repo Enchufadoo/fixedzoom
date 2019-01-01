@@ -11,16 +11,16 @@ const COLOR_WHITE = 'white';
 
 window.onload = function () {
   // can't think of anything else not to show the switch animation on page load
-  setTimeout(function () {
+  window.setTimeout(function () {
     let switche = document.querySelectorAll(".switchContainer");
 
-    for (i = 0; i < switche.length; ++i) {
+    for (let i = 0; i < switche.length; ++i) {
       switche[i].classList.remove('preload');
     }
-  }, 500)
+  }, 500);
 
   loadSavedSettings();
-}
+};
 
 
 /**
@@ -56,7 +56,7 @@ const saveRegexp = function () {
     method: "setAllowRegexp",
     value: this.checked
   });
-}
+};
 
 /**
  * Save in settings wheter or not to create automatic rules when theres
@@ -67,7 +67,7 @@ const saveAutoRule = function () {
     method: "setAllowAutoRule",
     value: this.checked
   });
-}
+};
 
 /**
  * Save allowing a keyboard shortcut to change the extensions zoom
@@ -77,7 +77,7 @@ const saveAllowShortcut = function () {
     method: "saveAllowShortcut",
     value: this.checked
   });
-}
+};
 
 /**
  * Change one of the two icons available
@@ -87,18 +87,18 @@ const saveIconColor = function () {
     method: "setIconColor",
     value: blackIconCb.checked ? COLOR_BLACK : COLOR_WHITE
   });
-}
+};
 
 /**
  * Allow or not multiple profiles 
  */
 const saveAllowProfiles = function () {
-  
+
   browser.runtime.sendMessage({
     method: "setAllowProfiles",
     value: this.checked
   });
-}
+};
 
 allowRegexpCb.addEventListener('change', saveRegexp);
 allowAutoRuleCb.addEventListener('change', saveAutoRule);

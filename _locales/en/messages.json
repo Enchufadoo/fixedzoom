@@ -79,52 +79,79 @@
 	"rulesBySiteListTitle": {
 		"message": "List of created rules"
 	},
-	"partialRuleButton":{
+	"partialRuleButton": {
 		"message": "Want to add more advanced rules?"
 	},
-	"partialRuleDescription":{
+	"partialRuleDescription": {
 		"message": "If you wish to match only part of the url, for example all the domains that contain the word fruit, just begin the word with a #. For example #fruit would match freshfruits.com and reddit.com/r/fruit."
 	},
-	"partialRuleCarefully":{
+	"partialRuleCarefully": {
 		"message": "Use it carefully!"
 	},
-	"managemetRegexLabel":{
+	"managemetRegexLabel": {
 		"message": "Regular Expression"
 	},
-	"advancedSettingsLabel":{
+	"advancedSettingsLabel": {
 		"message": "Advanced Settings"
 	},
-	"settingsLabel":{
+	"settingsLabel": {
 		"message": "Settings"
 	},
-	"advancedSettingsRegexTitle":{
+	"advancedSettingsRegexTitle": {
 		"message": "Allow regular expressions when creating rules"
 	},
-	"regexpLabel":{
+	"regexpLabel": {
 		"message": "Regular Expressions"
 	},
-	"autoRuleLabel":{
+	"autoRuleLabel": {
 		"message": "Automatic Rules"
 	},
-	"advancedSettingsAutoRuleTitle":{
+	"advancedSettingsAutoRuleTitle": {
 		"message": "Save site rule on manual zoom change"
 	},
-	"deleteAllRulesBtn":{
+	"deleteAllRulesBtn": {
 		"message": "Delete All Rules"
 	},
-	"shortcutKeysTitle":{
+	"shortcutKeysTitle": {
 		"message": "Keyboard Shortcut"
 	},
-	"shortcutKeysLabel":{
+	"shortcutKeysLabel": {
 		"message": "Change the extension zoom with CTRL ALT + and CTRL ALT -"
 	},
-	"iconColorTitle":{
+	"iconColorTitle": {
 		"message": "Extension Icon"
 	},
-	"blackIconOption":{
+	"blackIconOption": {
 		"message": "Black icon"
 	},
-	"whiteIconOption":{
+	"whiteIconOption": {
 		"message": "White icon"
+	},
+	"profilesLabel": {
+		"message": "Profiles"
+	},
+	"allowProfilesLabel": {
+		"message": "Allow Multiple Profiles"
+	},
+	"allowProfilesTitle": {
+		"message": "Enable multiple zoom profiles for the extension."
+	},
+	"newProfileLabel": {
+		"message": "Select a name for the new profile."
+	},
+	"newProfileButton": {
+		"message": "Save Profile"
+	},
+	"newProfileHeader": {
+		"message": "New Profile"
+	},
+	"createProfileOption": {
+		"message": "Create a new profile"
+	},
+	"defaultProfileOption": {
+		"message": "Default Profile"
+	},
+	"deleteProfileButton": {
+		"message": "Delete Profile"
 	}
 }

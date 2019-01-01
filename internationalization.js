@@ -3,4 +3,3 @@ for (let node of document.querySelectorAll('[data-i18n]')) {
   text = chrome.i18n.getMessage(text);
   attr ? node[attr] = text : node.appendChild(document.createTextNode(text));
 }
-

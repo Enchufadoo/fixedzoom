@@ -3,10 +3,23 @@
     const MORE_ZOOM_CONSTANT = "MORE_ZOOM";
     const LESS_ZOOM_CONSTANT = "LESS_ZOOM";
     const ZOOM_SHORTCUT_STEP = 5;
+    const DEFAULT_ZOOM = 100;
+    const DEFAULT_PROFILE = 0;
 
     const COLOR_BLACK = 'black';
-    const COLOR_WHITE = 'white';
-
+    class ZoomProfile {
+        /**
+         * Data for a zoom profile, there can be repeated names
+         * @param {number} zoom 
+         * @param {array} sites 
+         * @param {string} name
+         */
+        constructor(zoomLevel, sites, name) {
+            this.zoomLevel = parseInt(zoomLevel);
+            this.sites = sites ? sites : [];
+            this.name = name ? name : 'Unnamed';
+        }
+    }
     class Settings {
         constructor() {
             this.enabled = false;
@@ -17,23 +30,46 @@
             this.allowKeyboardShortcut = false;
             this.allowProfiles = false;
             this.iconColor = COLOR_BLACK;
-            this.sites = [];
-            this.zoomLevel = 100;
             this.profiles = [];
-            this.profile = false;
+            this.profile = DEFAULT_PROFILE;
+        }
+        /**
+         * Always use profiles instead of holding a separate variable
+         * for the zoom level, same for sites
+         */
+        set zoomLevel(value) {
+            this.profiles[this.profile].zoomLevel = value;
+        }
+        get zoomLevel() {
+            return this.profiles[this.profile].zoomLevel;
+        }
+        set sites(value) {
+            this.profiles[this.profile].sites = value;
+        }
+        get sites() {
+            return this.profiles[this.profile].sites;
         }
 
         /**
          * Saves a new zoom level
-         * @param {*} sites 
+         * @param {number} zoomLevel 
          */
         saveZoomLevel(zoomLevel) {
             if (zoomLevel >= 30 && zoomLevel <= 300) {
                 this.zoomLevel = zoomLevel;
-                return browser.storage.local.set({
-                    zoomLevel: zoomLevel
-                });
+                return this.saveProfiles();
             }
+        }
+
+        /**
+         * Save wheter or not to enable the extension
+         * @param {*} enabled 
+         */
+        saveEnabledStatus(enabled) {
+            this.enabled = enabled;
+            return browser.storage.local.set({
+                enabled: enabled
+            });
         }
 
         /**
@@ -43,9 +79,7 @@
         saveSitesStorage(sites) {
             this.sites = sites;
             tabUrlZoomList = {};
-            return browser.storage.local.set({
-                sites: sites
-            });
+            return this.saveProfiles();
         }
 
         /**
@@ -53,17 +87,26 @@
          * @param {*} name 
          */
         createNewProfile(name) {
-            let profiles = this.profiles
-            profiles.push({
-                name: name,
-                zoomLevel: 100,
-                sites: []
-            })
+            this.profiles.push(
+                new ZoomProfile(DEFAULT_ZOOM, [], name)
+            );
+            return this.saveProfiles();
+        }
 
+        /**
+         * Changes the profile (index of the profiles array which is active)
+         * @param {*} profile 
+         */
+        saveProfile(profile) {
             return browser.storage.local.set({
-                'profiles': profiles
-            })
+                "profile": profile
+            });
+        }
 
+        saveProfiles() {
+            return browser.storage.local.set({
+                "profiles": this.profiles
+            });
         }
 
         /**
@@ -75,7 +118,7 @@
             this[setting] = value;
             return browser.storage.local.set({
                 [setting]: value
-            })
+            });
         }
 
         /**
@@ -91,7 +134,49 @@
                     path: "icons/binoculars_white.png"
                 });
             }
+        }
 
+        /**
+         * If there are not profiles created load the default settings into the first profile
+         */
+        initializeProfiles() {
+            if (this.profiles.length === 0) {
+                this.profiles[DEFAULT_PROFILE] = new ZoomProfile(DEFAULT_ZOOM, [],
+                    chrome.i18n.getMessage('defaultProfileOption'));
+                return browser.storage.local.set({
+                    profiles: this.profiles
+                });
+            }
+        }
+
+        /**
+         * If the profile if different from the default profile
+         * delete it, save it in storage and fallback to the default profile
+         * @param {*} profile 
+         */
+        deleteProfile(profile) {
+            if (profile > DEFAULT_PROFILE && profile < this.profiles.length) {
+                this.profiles.pop(profile);
+
+                return browser.storage.local.set({
+                    'profiles': this.profiles
+                }).then(function () {
+                    return this.changeProfile(DEFAULT_PROFILE);
+                }.bind(this));
+            }
+        }
+
+        /**
+         * Sets the current profile, and triggers a zoomchange after
+         * 
+         * @param {number} profile 
+         */
+        changeProfile(profile) {
+            tabUrlZoomList = {};
+            this.profile = profile;
+            return this.saveProfile(profile).then(function () {
+                changeZoomInAllTabs();
+            });
         }
 
         /**
@@ -102,7 +187,9 @@
         }
 
     }
-
+    /**
+     * Data structure for a zoom rule
+     */
     class SiteConfig {
         constructor(zoom, domain, partial, regexp) {
             this.zoom = parseInt(zoom);
@@ -129,15 +216,15 @@
 
     const onError = function (error) {
         console.log(LOG_CONST, error);
-    }
+    };
 
     /**
      * Keeps track of which tab has an url with a specific zoom 
      * Not to check on every tab update
      */
     const removeUrlZoomList = tabId => {
-        tabUrlZoomList[tabId] = undefined
-    }
+        tabUrlZoomList[tabId] = undefined;
+    };
 
     /**
      * Loads the settings and enables the new zoom 
@@ -148,39 +235,55 @@
             extSettings.scriptInitialized = true;
             tabUrlZoomList = {};
 
-            if (settings.sites) {
-                extSettings.sites = settings.sites.map(function (x) {
-                    return new SiteConfig(x.zoom, x.domain, x.partial, x.regexp);
-                });
-            }
-
             /**
              * Black icon by default
              */
             extSettings.iconColor = settings.iconColor ? settings.iconColor : COLOR_BLACK;
 
-            let savedSet = [
+            [
                 'allowRegexp',
                 'allowAutoRule',
                 'allowKeyboardShortcut',
                 'allowRegexp',
                 'allowProfiles',
                 'profiles',
-                'enabled'
-            ]
-
-            for (let i in savedSet) {
-                let set = savedSet[i]
+                'enabled',
+                'profile'
+            ].map((set) => {
                 if (settings[set]) {
-                    extSettings[set] = settings[set]
+                    extSettings[set] = settings[set];
                 }
-            }
+            });
+
+            extSettings.initializeProfiles();
+
             /**
-             * Just in case
+             * fix so that the old structure of settings works with the new one
+             * ill eventually remove it
              */
-            extSettings.zoomLevel = parseInt(settings.zoomLevel);
+            if (settings.zoomLevel && settings.zoomLevel != 100) {
+                extSettings.zoomLevel = settings.zoomLevel;
+                browser.storage.local.remove("zoomLevel");
+            }
+            if (settings.sites && settings.sites.length > 0) {
+                extSettings.sites = settings.sites;
+                browser.storage.local.remove("sites");
+            }
+            /** why did I use map? @TODO */
+            extSettings.profiles = extSettings.profiles.map(function (pro) {
+                pro.sites = pro.sites.map(function (site) {
+                    if (pro.sites) {
+                        pro.sites = pro.sites.map(function (x) {
+                            return new SiteConfig(x.zoom, x.domain, x.partial, x.regexp);
+                        });
+                    }
+                    return site;
+                });
+                return pro;
+            });
+
         });
-    }
+    };
 
     /**
      * Change the zoom in all browser tabs (after settings are loaded)
@@ -191,12 +294,11 @@
         querying.then(function (tabs) {
             for (let tab of tabs) {
                 if (tab.id !== exceptTabId) {
-
-                    changeZoomInSingleTab(tab)
+                    changeZoomInSingleTab(tab);
                 }
             }
         }, onError);
-    }
+    };
 
     /**
      * Changes the zoom of a single tab
@@ -216,7 +318,7 @@
         if (extSettings.sites.length && typeof tabUrlZoomList[tab.id] == 'undefined') {
             let sitesReversed = extSettings.sites.slice().reverse();
             let matchZoom = false;
-            for (site in sitesReversed) {
+            for (let site in sitesReversed) {
                 let siteRule = sitesReversed[site];
                 if (siteRule.partial) {
                     // If there's a partial string search as opposed to a domain search
@@ -231,7 +333,7 @@
                         break;
                     }
                 } else {
-                    let currentHostname = (new URL(tab.url)).hostname.replace(/^www\./, '');
+                    let currentHostname = (new window.URL(tab.url)).hostname.replace(/^www\./, '');
                     if (currentHostname == siteRule.domain) {
                         matchZoom = siteRule.zoom;
                         break;
@@ -244,11 +346,9 @@
 
         let newZoom = tabUrlZoomList[tab.id] || extSettings.zoomLevel;
         browser.tabs.setZoom(tab.id, newZoom / 100);
-    }
+    };
 
     const tabUpdateListener = function (tabId, info, tab) {
-
-
         /**
          * This gets called many times, but if I dont do it 
          * the zoom wont be applied on page load which means 
@@ -258,7 +358,7 @@
             /**
              * If theres a change in the tab url cleanup the saved value for that url
              */
-            if (info.url) removeUrlZoomList(tabId)
+            if (info.url) removeUrlZoomList(tabId);
 
             /**
              * Monitor which tabs have a complete status so any posterior zoom change
@@ -277,7 +377,7 @@
             }
             changeZoomInSingleTab(tab);
         }
-    }
+    };
 
     /**
      * After the settings have been load, update the tabs zoom
@@ -300,8 +400,7 @@
         }
 
         setZoomChangeHandlers();
-
-    }
+    };
 
     /**
      * Listen to the browser events for zoom in order to create rules
@@ -317,7 +416,7 @@
                 browser.tabs.onZoomChange.addListener(handleZoomed);
             }
         }
-    }
+    };
 
     /**
      * Restores the default browser zoom 100%
@@ -329,13 +428,13 @@
                 browser.tabs.setZoom(tab.id, 1);
             }
         }, onError);
-    }
+    };
 
     /**
      * Sends to the frontend the url of the current active tab in the current active window
      */
     const getCurrentUrl = function () {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             browser.tabs.query({
                     active: true,
                     windowId: browser.windows.WINDOW_ID_CURRENT
@@ -343,16 +442,16 @@
                 .then(tabs => browser.tabs.get(tabs[0].id))
                 .then(tab => {
                     let url = tab.url;
-                    let urlObj = new URL(url)
+                    let urlObj = new window.URL(url);
                     let validProtocol = urlObj.protocol && urlObj.protocol !== 'moz-extension:';
 
                     if (validProtocol) {
-                        lastUsedUrl = tab.url
+                        lastUsedUrl = tab.url;
                     }
                     resolve(lastUsedUrl);
                 });
         });
-    }
+    };
 
     /**
      * Adds a rule for a site
@@ -361,7 +460,7 @@
      */
     const saveCustomSiteRule = function (newRule) {
         return loadSettings().then(function () {
-            let newSites = []
+            let newSites = [];
             if (extSettings.sites.length) {
                 newSites = extSettings.sites.filter(function (site) {
                     // the partial check it's because you could have the same string
@@ -372,12 +471,12 @@
                         let same = !!site.partial === !!newRule.partial && !!site.regexp === !!newRule.regexp;
                         return !same;
                     }
-                })
+                });
             }
             newSites.push(newRule);
             extSettings.saveSitesStorage(newSites);
-        })
-    }
+        });
+    };
 
     /**
      * Deletes a site rule from the saved settings
@@ -395,18 +494,18 @@
                 });
                 extSettings.saveSitesStorage(newSites);
             }
-        })
-    }
+        });
+    };
 
     /**
      * Reload everything from local storage
      * and update the tab listeners
      */
-    const settingsSaved = function () {
+    const loadEnableSettings = function () {
         loadSettings().then(function () {
             enableSettings();
         });
-    }
+    };
 
     /**
      * Handles zoom events to create new rules automatically
@@ -429,9 +528,9 @@
                  * 0.9
                  */
                 if (tabCompleteList[zoomChangeInfo.tabId]) {
-                    let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100)
+                    let zoom = parseInt(zoomChangeInfo.newZoomFactor * 100);
                     let url = tabCompleteList[zoomChangeInfo.tabId].url;
-                    let currentHostname = (new URL(url)).hostname.replace(/^www\./, '');
+                    let currentHostname = (new window.URL(url)).hostname.replace(/^www\./, '');
 
                     /**
                      * If the zoom level for the tab is different from the main zoom level create a rule
@@ -443,13 +542,13 @@
                             domain: currentHostname,
                             partial: false,
                             regexp: false
-                        })
+                        });
                     } else {
                         deleteCustomSiteRule({
                             domain: currentHostname,
                             partial: false,
                             regexp: false
-                        })
+                        });
                     }
                 }
             }
@@ -462,104 +561,127 @@
      */
     const changeZoomFromShortcut = function (zoomChange) {
         if (zoomChange == MORE_ZOOM_CONSTANT) {
-            return extSettings.saveZoomLevel(extSettings.zoomLevel + ZOOM_SHORTCUT_STEP)
+            return extSettings.saveZoomLevel(extSettings.zoomLevel + ZOOM_SHORTCUT_STEP);
         } else if (zoomChange == LESS_ZOOM_CONSTANT) {
-            return extSettings.saveZoomLevel(extSettings.zoomLevel - ZOOM_SHORTCUT_STEP)
+            return extSettings.saveZoomLevel(extSettings.zoomLevel - ZOOM_SHORTCUT_STEP);
         }
-    }
+    };
 
-    const createNewProfile = function (profileName) {
+    /**
+     * Saves wheter or not to allow, and enables or not the key handlers on each tab
+     * @param {*} allow 
+     */
+    const saveAllowShortcut = function (allow) {
+        return extSettings.saveAdvancedSetting('allowKeyboardShortcut', allow).then(function () {
+            // tell the tabs to reload the option value
+            var querying = browser.tabs.query({});
+            querying.then(function (tabs) {
+                for (let tab of tabs) {
+                    browser.tabs.sendMessage(
+                        tab.id, {
+                            message: "refreshShortcutsEnabled"
+                        }
+                    );
+                }
+            }, onError);
+        });
+    };
 
-    }
-
-    browser.runtime.onMessage.addListener((message, sender) => {
+    browser.runtime.onMessage.addListener((message) => {
         switch (message.method) {
             case "saveCustomSiteRule":
-                saveCustomSiteRule(message.site).then(function () {
-                    settingsSaved();
-                })
-                break;
-            case "deleteCustomSiteRule":
-                deleteCustomSiteRule(message.site).then(function () {
-                    settingsSaved();
+                /** Creates a rule */
+                return saveCustomSiteRule(message.site).then(function () {
+                    loadEnableSettings();
                 });
-                break;
+            case "deleteCustomSiteRule":
+                /** Deletes a rule */
+                return deleteCustomSiteRule(message.site).then(function () {
+                    loadEnableSettings();
+                });
             case "getCurrentUrl":
+                /** Returns the url of the site in tab where the popup is */
                 return getCurrentUrl();
             case "restoreDefaultZoom":
-                restoreDefaultZoom();
-                break;
+                /** Restores the zoom to 100% in all active tabs */
+                return restoreDefaultZoom();
             case "openSiteRulesManagement":
-                browser.tabs.create({
+                /** Opens the rules management tab */
+                return browser.tabs.create({
                     "url": "/management/management.html"
                 });
-                break;
             case "deleteAllRules":
-                extSettings.deleteAllRules().then(function () {
+                /** Deletes all the zoom rules created */
+                return extSettings.deleteAllRules().then(function () {
                     changeZoomInAllTabs();
-                })
-                break;
+                });
             case "setAllowRegexp":
-                extSettings.saveAdvancedSetting('allowRegexp', message.value);
-                break;
+                /** Allow to create rules with regular expressions */
+                return extSettings.saveAdvancedSetting('allowRegexp', message.value);
             case "setIconColor":
-                extSettings.saveAdvancedSetting('iconColor', message.value);
-                break;
+                /** Sets the color of the extension icon */
+                return extSettings.saveAdvancedSetting('iconColor', message.value);
             case "setAllowProfiles":
-                extSettings.saveAdvancedSetting('allowProfiles', message.value);
-                break;
+                /** Enable or not zoom profiles */
+                return extSettings.saveAdvancedSetting('allowProfiles', message.value).then(function () {
+                    /** Allways set the default profile when enabling/disabling profiles */
+                    return extSettings.changeProfile(DEFAULT_PROFILE);
+                });
             case "setAllowAutoRule":
-                extSettings.saveAdvancedSetting('allowAutoRule', message.value).then(function () {
+                /** Whether or not to create rules when the user uses ctr + - or alike*/
+                return extSettings.saveAdvancedSetting('allowAutoRule', message.value).then(function () {
                     setZoomChangeHandlers();
                 });
-                break;
-            case "saveAllowShortcut":
-                extSettings.saveAdvancedSetting('allowKeyboardShortcut', message.value).then(function () {
-                    // tell the tabs to reload the option value
-                    var querying = browser.tabs.query({});
-                    querying.then(function (tabs) {
-                        for (let tab of tabs) {
-                            browser.tabs.sendMessage(
-                                tab.id, {
-                                    message: "refreshShortcutsEnabled"
-                                }
-                            )
-                        }
-                    }, onError);
+            case "setZoomLevel":
+                /** Zoom level change, not the only case @see zoomFromShortcut */
+                return extSettings.saveZoomLevel(message.value).then(function () {
+                    enableSettings();
                 });
-                break;
+            case "setEnabledStatus":
+                /** Set whether or not the extension is nabled */
+                return extSettings.saveEnabledStatus(message.value).then(function () {
+                    enableSettings();
+                });
+            case "saveAllowShortcut":
+                /** Allow a keyboard shortcut to change the extensions zoom 
+                 * (not particular site only) */
+                return saveAllowShortcut(message.value);
             case "getSetting":
-                /**
-                 * Sends to the frontend a saved setting
-                 */
-                return new Promise((resolve, reject) => {
+                /** Sends to the frontend a saved setting */
+                return new Promise((resolve) => {
                     return resolve(extSettings[message.value]);
                 });
+            case "getAllSettings":
+                /** Sends to the frontend all the settings */
+                return new Promise((resolve) => {
+                    return resolve(extSettings);
+                });
             case "zoomFromShortcut":
-                let resShor = changeZoomFromShortcut(message.zoomChange);
-                if (resShor) {
-                    resShor.then(function () {
-                        changeZoomInAllTabs();
-                    });
-                }
-                break;
+                /** Sets the zoom after pressing ctrl alt + - */
+                return changeZoomFromShortcut(message.zoomChange).then(function () {
+                    changeZoomInAllTabs();
+                });
             case "createNewProfile":
-                extSettings.createNewProfile(message.value);
-                break;
+                /** New zoom profile */
+                return extSettings.createNewProfile(message.value);
             case "changeProfile":
-                extSettings.saveAdvancedSetting('profile', message.value);
-                break;
+                /** Change the current profile */
+                return extSettings.changeProfile(message.value);
+            case "deleteCurrentProfile":
+                /** Delete the currently enabled profile */
+                return new Promise((resolve) => {
+                    resolve(extSettings.deleteProfile(extSettings.profile));
+                });
             case "settingsSaved":
-                settingsSaved();
-                break;
-
+                /** Reload all the settings from the database (bad naming)  */
+                return loadEnableSettings();
         }
     });
 
+    /**
+     * Entry point of the extension
+     */
     if (!extSettings.scriptInitialized) {
-        loadSettings().then(function () {
-
-            enableSettings();
-        });
+        loadEnableSettings();
     }
 })();

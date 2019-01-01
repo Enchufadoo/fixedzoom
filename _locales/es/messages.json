@@ -127,5 +127,32 @@
 	},
 	"whiteIconOption": {
 		"message": "Icono blanco"
+	},
+	"profilesLabel": {
+		"message": "Perfiles"
+	},
+	"allowProfilesLabel": {
+		"message": "Permitir múltiples perfiles"
+	},
+	"allowProfilesTitle": {
+		"message": "Activar múltiples perfiles de zoom para la extensión."
+	},
+	"newProfileLabel": {
+		"message": "Elige un nombre para el nuevo perfil."
+	},
+	"newProfileButton": {
+		"message": "Guardar Perfil"
+	},
+	"newProfileHeader": {
+		"message": "Nuevo Perfil"
+	},
+	"createProfileOption": {
+		"message": "Crear un nuevo perfil"
+	},
+	"defaultProfileOption": {
+		"message": "Perfil por Defecto"
+	},
+	"deleteProfileButton": {
+		"message": "Borrar Perfil"
 	}
 }

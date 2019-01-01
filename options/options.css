@@ -168,7 +168,6 @@ a.link {
   min-height: 20px;
   min-width: 40px;
   background-color: white;
-  paddding: 10px 20px;
   display: inline-block;
   border-radius: 2px !important;
   background-color: #fff !important;
@@ -191,4 +190,28 @@ a.link {
 
 #backArrow {
   float: right;
+}
+
+#deleteProfile {
+
+  font-size: 12px;
+  float: right;
+}
+
+#profileSelect {
+  margin: 0;
+  padding: 100;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 100;
+  line-height: 14px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  line-height: 20px;
+  max-height: 40px;
+
+}
+
+#deleteProfile:hover {
+  color: black;
 }

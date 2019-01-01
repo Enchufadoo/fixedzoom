@@ -24,7 +24,7 @@
         });
       }
     }
-  }
+  };
   /**
    * Add or remove the zoom handler based on the config
    */
@@ -36,14 +36,14 @@
       if (enabled) {
         document.addEventListener('keyup', keyHandler, false);
       } else {
-        document.removeEventListener('keyup', keyHandler, false)
+        document.removeEventListener('keyup', keyHandler, false);
       }
     });
-  }
+  };
   /**
    * If the setting is changed, refresh the handler on active tabs
    */
-  browser.runtime.onMessage.addListener((data, sender) => {
+  browser.runtime.onMessage.addListener((data) => {
     if (data.message == REFRESH_SHORTCUTS_ENABLED) {
       getShortcutsEnabled();
     }

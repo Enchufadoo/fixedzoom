@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="chrome://browser/content/extension.css" />
   <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
   <link rel="stylesheet" href="options.css" />
-  <link rel="stylesheet" href="switch.css" />
+  <link rel="stylesheet" href="../assets/css/switch.css" />
 
 </head>
 
@@ -41,15 +41,18 @@
         </div>
       </div>
       <div class="longSep" id="profileSelectArea">
-        <div class="littleHeader" data-i18n="profilesLabel">
-          Profiles
-        </div>
+        <div class="littleHeader" data-i18n="profilesLabel"></div>
         <div class="basicSep">
-          <select style="margin: 0; padding: 100" id="profileSelect">
-            <option value="defaultProfile">Default Profile</option>
-            <option value="newProfile" id="newProfileButton"><span>+</span> Create a new profile</option>
-          </select>
+          <div>
+            <select id="profileSelect">
+
+            </select>
+          </div>
+          <div>
+            <a class="link" id="deleteProfile" data-i18n="deleteProfileButton"></a>
+          </div>
         </div>
+
       </div>
       <div class="zoomRules longSep">
         <div class="littleHeader" data-i18n="subheaderZoomRules">

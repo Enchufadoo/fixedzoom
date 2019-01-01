@@ -2,6 +2,7 @@ const ZOOM_BTN_STEP = 5;
 const WAIT_SLIDER_SAVE_OPTIONS = 900;
 let enabledCb = document.querySelector("#enabled");
 let zoomLevelBtn = document.querySelector("#zoomLevel");
+let zoomLevelLbl = document.querySelector("#zoomLevelLbl");
 let plusBtn = document.querySelector("#plusButton");
 let lessBtn = document.querySelector("#lessButton");
 let manageBtn = document.querySelector("#manageBtn");
@@ -9,53 +10,69 @@ let restoreBtn = document.querySelector("#restoreBtn");
 let disabledSector = document.querySelector("#disabledSector");
 let currentUrlDiv = document.querySelector("#currentUrl");
 let currentSiteSector = document.querySelector("#currentSiteSector");
-let newProfileButton = document.querySelector("#newProfileButton");
 let profileSelect = document.querySelector("#profileSelect");
 let profileSelectArea = document.querySelector("#profileSelectArea");
+let deleteProfileBtn = document.querySelector("#deleteProfile");
 let sliderTimer = false;
+let settings = false;
 
-window.onload = function () {
-  // can't think of anything else not to show the switch animation on page load
-  setTimeout(function () {
-    let switche = document.querySelector(".switchContainer");
-    switche.classList.remove('preload');
-  }, 500)
-}
 
 /**
  * Enable or disable the zoom input and change the zoom percentage
  * @param {boolean} status 
  */
-const updateUi = function (status) {
+const updateUi = function () {
+
+  let enabled = !!settings.enabled;
+  let zoomLevel = settings.profiles[settings.profile].zoomLevel || 100;
+  let allowProfiles = !!settings.allowProfiles;
+  zoomLevelBtn.value = zoomLevel;
+  enabledCb.checked = enabled;
+  zoomLevelLbl.innerHTML = zoomLevel + "%";
+
   let zoomSector = document.querySelector("div.zoomSector");
-  if (status) {
+  if (enabled) {
     zoomSector.classList.remove('disabled-option');
     disabledSector.classList.add('disabled-option');
   } else {
     zoomSector.classList.add('disabled-option');
     disabledSector.classList.remove('disabled-option');
   }
-  document.querySelector("#zoomLevelLbl").innerHTML = zoomLevelBtn.value + "%"
-}
 
-const updateUiFromForm = function () {
-  let status = enabledCb.checked;
-  updateUi(status);
+  profileSelectArea.style.display = allowProfiles ? "block" : "none";
+  if (allowProfiles && settings.profiles && settings.profiles.length > 0) {
+    addProfilesSelect(settings.profiles, settings.profile);
+  }
+
+  deleteProfileBtn.style.visibility = settings.profile > 0 ? "visible" : "hidden";
+
+  loadCurrentUrl();
+};
+
+/**
+ * Store then zoom and update the ui
+ */
+function saveZoom() {
+  let zoomLevel = zoomLevelBtn.value;
+  return browser.runtime.sendMessage({
+    method: "setZoomLevel",
+    value: zoomLevel
+  }).then(function () {
+    settings.profiles[settings.profile].zoomLevel = zoomLevel;
+    updateUi();
+  });
 }
 
 /**
- * Saves everything in the local storage
- * and reloads 
+ * Store wheter the extension is enabled or not
  */
-function saveOptions() {
-  browser.storage.local.set({
-    enabled: document.querySelector("#enabled").checked,
-    zoomLevel: document.querySelector("#zoomLevel").value
+function saveEnabled() {
+  let enabled = !!enabledCb.checked;
+  browser.runtime.sendMessage({
+    method: "setEnabledStatus",
+    value: enabled
   }).then(function () {
-    browser.runtime.sendMessage({
-      method: "settingsSaved",
-    });
-    updateUiFromForm();
+    restoreSettings().then(updateUi);
   });
 }
 
@@ -68,40 +85,32 @@ const loadCurrentUrl = function () {
     method: "getCurrentUrl",
   }).then(function (currentUrl) {
 
-    let url = new URL(currentUrl)
+    let url = new window.URL(currentUrl);
     let validProtocol = url.protocol != 'moz-extension:';
     let currentHostname = (url).hostname.replace(/^www\./, '');
 
     if (currentHostname && validProtocol) {
-      currentUrlDiv.innerHTML = currentHostname
+      currentUrlDiv.innerHTML = currentHostname;
       currentSiteSector.style.display = "block";
     } else {
       currentSiteSector.style.display = "none";
     }
   });
-}
+};
 
 /**
  * Loads saved and default settings in the options panel
  */
-function restoreOptions() {
-  function setCurrentChoice(result) {
-    let status = result.enabled || false;
-    document.querySelector("#zoomLevel").value = result.zoomLevel || "100";
-    document.querySelector("#enabled").checked = status;
-    profileSelectArea.style.display = result.allowProfiles ? "block" : "none"
-    addProfilesSelect(result.profiles, result.profile);
-    updateUi(status);
-  }
-
-  function onError(error) {
-    console.log(`Error: ${error}`);
-  }
-
-  var getting = browser.storage.local.get();
-  getting.then(setCurrentChoice, onError);
-  loadCurrentUrl();
-
+function restoreSettings() {
+  return browser.runtime.sendMessage({
+    method: "getAllSettings",
+  }).then(
+    result => {
+      settings = result;
+    },
+    error => {
+      console.log(`Error: ${error}`);
+    });
 }
 
 /**
@@ -111,14 +120,23 @@ function restoreOptions() {
  */
 function addProfilesSelect(profiles, selectedProfile) {
   if (profiles) {
+    let select = document.getElementById("profileSelect");
+    select.options.length = 0;
+
+    let cOption = document.createElement("option");
+    cOption.value = "newProfile";
+    cOption.text = "+ " + chrome.i18n.getMessage('createProfileOption');
+    cOption.id = "newProfileButton";
+    select.add(cOption);
+
     for (let i in profiles) {
-      let select = document.getElementById("profileSelect");
+
       var option = document.createElement("option");
       option.text = profiles[i].name;
       option.value = i;
-      select.add(option, i + 1);
-      if (i === selectedProfile) {
-        option.selected = true;
+      select.add(option, i);
+      if (i == selectedProfile) {
+        select.value = i;
       }
     }
   }
@@ -133,7 +151,7 @@ function moreZoom(event) {
   let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
   if (value % 5) value -= value % 5;
   zoomLevelBtn.value = value + ZOOM_BTN_STEP;
-  saveOptions();
+  saveZoom();
 }
 /**
  * Substracts zoom with the buttons
@@ -144,8 +162,7 @@ function lessZoom(event) {
   let value = zoomLevelBtn.value = parseInt(zoomLevelBtn.value);
   if (value % 5) value -= value % 5 - ZOOM_BTN_STEP;
   zoomLevelBtn.value = value - ZOOM_BTN_STEP;
-
-  saveOptions();
+  saveZoom();
 }
 /**
  * Opens the administration of per site zoom rules
@@ -164,12 +181,13 @@ function openSiteManagement(event) {
  * causes too much cpu usage
  * @param {*} event 
  */
-function sliderChangeHandler(event) {
-  updateUiFromForm();
-  if (sliderTimer) clearTimeout(sliderTimer);
-  window.setTimeout(function () {
-    saveOptions();
-  }, WAIT_SLIDER_SAVE_OPTIONS)
+function sliderChangeHandler() {
+  if (sliderTimer) window.clearTimeout(sliderTimer);
+  zoomLevelLbl.innerHTML = settings.profiles[settings.profile].zoomLevel + "%";
+
+  sliderTimer = window.setTimeout(function () {
+    saveZoom();
+  }, WAIT_SLIDER_SAVE_OPTIONS);
 }
 
 /**
@@ -192,35 +210,53 @@ function restoreDefaultZoom(event) {
 function profileSelected(event) {
   event.preventDefault();
   event.stopPropagation();
-
-  switch (this.value) {
+  let value = this.value;
+  switch (value) {
     case 'newProfile':
       window.location = "../profiles/profiles.html";
-      break;
-    case 'defaultProfile':
-      browser.runtime.sendMessage({
-        method: "changeProfile",
-        value: false
-      });
       break;
     default:
       browser.runtime.sendMessage({
         method: "changeProfile",
-        value: this.value
+        value: parseInt(value)
+      }).then(function () {
+        restoreSettings().then(updateUi);
       });
   }
 }
 
 /**
+ * Deletes the selected profile and fallsback to the default one
+ * @param {*} event 
+ */
+function deleteCurrentProfile() {
+  let a = browser.runtime.sendMessage({
+    method: "deleteCurrentProfile",
+  });
+
+  a.then(() => {
+    restoreSettings().then(updateUi);
+  });
+
+}
+
+
+/**
  * Changes in form updates the ui
  */
-enabledCb.addEventListener('change', saveOptions);
+enabledCb.addEventListener('change', saveEnabled);
 zoomLevelBtn.addEventListener('change', sliderChangeHandler);
 zoomLevelBtn.addEventListener('input', sliderChangeHandler);
 plusBtn.addEventListener("click", moreZoom);
 lessBtn.addEventListener("click", lessZoom);
 manageBtn.addEventListener("click", openSiteManagement);
 restoreBtn.addEventListener("click", restoreDefaultZoom);
-document.addEventListener("DOMContentLoaded", restoreOptions);
+deleteProfileBtn.addEventListener("click", deleteCurrentProfile);
+document.addEventListener("DOMContentLoaded", () => {
+  restoreSettings().then(updateUi);
+  // switch animation fix
+  window.setTimeout(function () {
+    document.querySelector(".switchContainer").classList.remove('preload');
+  }, 500);
+});
 profileSelect.addEventListener("change", profileSelected);
-document.querySelector("form").addEventListener("submit", saveOptions);
