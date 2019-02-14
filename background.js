@@ -346,26 +346,18 @@
              */
             if (info.url) removeUrlZoomList(tabId);
 
-            /**
-             * Monitor which tabs have a complete status so any posterior zoom change
-             * problably (I think, maybe, most likely) come from the user
-             * so if the option of creating rules automaticly is enabled
-             * create a new rule
-             */
-            if (extSettings.allowAutoRule) {
-                if (tab.status === 'complete')
-                {
-                    if(typeof tabCompleteList[tabId] === 'undefined'){
-                        tabCompleteList[tabId] = {};
-                        tabCompleteList[tabId].url = tab.url;
-                        tabCompleteList[tabId].id = tab.id;
-                        changeZoomInSingleTab(tab);    
-                    }                    
-                } else {
-                    tabCompleteList[tabId] = undefined;
-                    changeZoomInSingleTab(tab);
-                }
-            }           
+            if (tab.status === 'complete')
+            {
+                if(typeof tabCompleteList[tabId] === 'undefined'){
+                    tabCompleteList[tabId] = {};
+                    tabCompleteList[tabId].url = tab.url;
+                    tabCompleteList[tabId].id = tab.id;
+                    changeZoomInSingleTab(tab);    
+                }                    
+            } else {
+                tabCompleteList[tabId] = undefined;
+                changeZoomInSingleTab(tab);
+            }
             
         }
     };
