@@ -1,7 +1,5 @@
 (function () {
     const LOG_CONST = 'FIXEDZOOM ERROR: ';
-    const MORE_ZOOM_CONSTANT = "MORE_ZOOM";
-    const LESS_ZOOM_CONSTANT = "LESS_ZOOM";
     const ZOOM_SHORTCUT_STEP = 5;
     const DEFAULT_ZOOM = 100;
     const DEFAULT_PROFILE = 0;
@@ -257,18 +255,6 @@
 
             extSettings.initializeProfiles();
 
-            /**
-             * fix so that the old structure of settings works with the new one
-             * ill eventually remove it
-             */
-            if (settings.zoomLevel && settings.zoomLevel != 100) {
-                extSettings.zoomLevel = settings.zoomLevel;
-                browser.storage.local.remove("zoomLevel");
-            }
-            if (settings.sites && settings.sites.length > 0) {
-                extSettings.sites = settings.sites;
-                browser.storage.local.remove("sites");
-            }
             /** why did I use map? @TODO */
             extSettings.profiles = extSettings.profiles.map(function (pro) {
                 pro.sites = pro.sites.map(function (site) {
