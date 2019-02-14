@@ -1,6 +1,5 @@
 let allowRegexpCb = document.querySelector("#allowRegexpCb");
 let allowAutoRuleCb = document.querySelector("#allowAutoRuleCb");
-let allowShortcutCb = document.querySelector("#allowShortcutCb");
 let allowProfilesCb = document.querySelector("#allowProfilesCb");
 let blackIconCb = document.querySelector("#blackIcon");
 let whiteIconCb = document.querySelector("#whiteIcon");
@@ -22,7 +21,6 @@ window.onload = function () {
   loadSavedSettings();
 };
 
-
 /**
  * Loads saved settings
  */
@@ -30,7 +28,6 @@ function loadSavedSettings() {
   function setCurrentChoice(result) {
     allowRegexpCb.checked = !!result.allowRegexp;
     allowAutoRuleCb.checked = !!result.allowAutoRule;
-    allowShortcutCb.checked = !!result.allowKeyboardShortcut;
     allowProfilesCb.checked = !!result.allowProfiles;
 
     if (typeof result.iconColor === 'undefined' || !result.iconColor || result.iconColor === COLOR_BLACK) {
@@ -70,16 +67,6 @@ const saveAutoRule = function () {
 };
 
 /**
- * Save allowing a keyboard shortcut to change the extensions zoom
- */
-const saveAllowShortcut = function () {
-  browser.runtime.sendMessage({
-    method: "saveAllowShortcut",
-    value: this.checked
-  });
-};
-
-/**
  * Change one of the two icons available
  */
 const saveIconColor = function () {
@@ -102,7 +89,6 @@ const saveAllowProfiles = function () {
 
 allowRegexpCb.addEventListener('change', saveRegexp);
 allowAutoRuleCb.addEventListener('change', saveAutoRule);
-allowShortcutCb.addEventListener('change', saveAllowShortcut);
 allowProfilesCb.addEventListener('change', saveAllowProfiles);
 Array.from(colorCb).forEach(function (element) {
   element.addEventListener('change', saveIconColor);

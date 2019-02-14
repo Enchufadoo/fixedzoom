@@ -16,12 +16,20 @@
     "storage",
     "tabs"
   ],
-  "content_scripts": [{
-    "run_at": "document_start",
-    "match_about_blank": true,
-    "matches": ["<all_urls>"],
-    "js": ["shortcuts.js"]
-  }],
+  "commands": {
+    "more-fixedzoom": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+Period"
+      },
+      "description": "Increase the zoom level for fixed zoom"
+    },
+    "less-fixedzoom": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+Comma"
+      },
+      "description": "Reduce the zoom level for fixed zoom"
+    }
+  },
   "browser_action": {
     "default_icon": "icons/binoculars_black.png",
     "default_title": "Fixed Zoom",

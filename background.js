@@ -389,6 +389,14 @@
         if (extSettings.enabled) {
             changeZoomInAllTabs();
         }
+        
+        if(browser.commands.onCommand.hasListener(handleCommandsListener)){
+            if (!extSettings.enabled) {
+                browser.commands.onCommand.removeListener(handleCommandsListener);
+            }
+        } else {
+            browser.commands.onCommand.addListener(handleCommandsListener);
+        }
 
         if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
             if (!extSettings.enabled) {
@@ -509,6 +517,18 @@
             enableSettings();
         });
     };
+    
+    const handleCommandsListener = function(command) {
+        if (command == "more-fixedzoom") {
+            extSettings.saveZoomLevel(extSettings.zoomLevel + ZOOM_SHORTCUT_STEP).then(function () {
+                changeZoomInAllTabs();
+            });
+        }else if (command == "less-fixedzoom") {
+            extSettings.saveZoomLevel(extSettings.zoomLevel - ZOOM_SHORTCUT_STEP).then(function () {
+                changeZoomInAllTabs();
+            });
+        }    
+    }
 
     /**
      * Handles zoom events to create new rules automatically
@@ -557,38 +577,6 @@
             }
         });
     }
-
-    /**
-     * Modify the extension zoom from a keyboard shortcut
-     * @param {*} zoomChange 
-     */
-    const changeZoomFromShortcut = function (zoomChange) {
-        if (zoomChange == MORE_ZOOM_CONSTANT) {
-            return extSettings.saveZoomLevel(extSettings.zoomLevel + ZOOM_SHORTCUT_STEP);
-        } else if (zoomChange == LESS_ZOOM_CONSTANT) {
-            return extSettings.saveZoomLevel(extSettings.zoomLevel - ZOOM_SHORTCUT_STEP);
-        }
-    };
-
-    /**
-     * Saves wheter or not to allow, and enables or not the key handlers on each tab
-     * @param {*} allow 
-     */
-    const saveAllowShortcut = function (allow) {
-        return extSettings.saveAdvancedSetting('allowKeyboardShortcut', allow).then(function () {
-            // tell the tabs to reload the option value
-            var querying = browser.tabs.query({});
-            querying.then(function (tabs) {
-                for (let tab of tabs) {
-                    browser.tabs.sendMessage(
-                        tab.id, {
-                            message: "refreshShortcutsEnabled"
-                        }
-                    );
-                }
-            }, onError);
-        });
-    };
 
     browser.runtime.onMessage.addListener((message) => {
         switch (message.method) {
@@ -644,11 +632,7 @@
                 /** Set whether or not the extension is nabled */
                 return extSettings.saveEnabledStatus(message.value).then(function () {
                     enableSettings();
-                });
-            case "saveAllowShortcut":
-                /** Allow a keyboard shortcut to change the extensions zoom 
-                 * (not particular site only) */
-                return saveAllowShortcut(message.value);
+                });            
             case "getSetting":
                 /** Sends to the frontend a saved setting */
                 return new Promise((resolve) => {
@@ -658,11 +642,6 @@
                 /** Sends to the frontend all the settings */
                 return new Promise((resolve) => {
                     return resolve(extSettings);
-                });
-            case "zoomFromShortcut":
-                /** Sets the zoom after pressing ctrl alt + - */
-                return changeZoomFromShortcut(message.zoomChange).then(function () {
-                    changeZoomInAllTabs();
                 });
             case "createNewProfile":
                 /** New zoom profile */
