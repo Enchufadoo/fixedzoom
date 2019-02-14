@@ -353,12 +353,14 @@
              * create a new rule
              */
             if (extSettings.allowAutoRule) {
-                if (tab.status === 'complete' && 
-                typeof tabCompleteList[tabId] === 'undefined') {
-                    tabCompleteList[tabId] = {};
-                    tabCompleteList[tabId].url = tab.url;
-                    tabCompleteList[tabId].id = tab.id;
-                    changeZoomInSingleTab(tab);
+                if (tab.status === 'complete')
+                {
+                    if(typeof tabCompleteList[tabId] === 'undefined'){
+                        tabCompleteList[tabId] = {};
+                        tabCompleteList[tabId].url = tab.url;
+                        tabCompleteList[tabId].id = tab.id;
+                        changeZoomInSingleTab(tab);    
+                    }                    
                 } else {
                     tabCompleteList[tabId] = undefined;
                     changeZoomInSingleTab(tab);
