@@ -117,10 +117,13 @@
 		"message": "Atajos del Teclado"
 	},
 	"shortcutKeysLabel": {
-		"message": "Puedes el zoom de la extension con CTRL ALT , y CTRL ALT ."
+		"message": "Puedes cambiar el zoom de la extensión con CTRL , y CTRL ."
 	},
 	"shortcutKeysLink": {
-		"message": "Puedes modificar esto aqui: "
+		"message": "Los atajos se pueden configurar así: "
+	},
+	"shortcutErrorLabel":{
+		"message": "(Nuevos atajos debido a un error)"
 	},
 	"iconColorTitle": {
 		"message": "Icono de la Extensión"

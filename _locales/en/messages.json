@@ -116,11 +116,14 @@
 		"message": "Keyboard Shortcut"
 	},
 	"shortcutKeysLabel": {
-		"message": "You can set the extension zoom with CTRL ALT , and CTRL ALT ."
+		"message": "You can set the extension zoom with CTRL , and CTRL . "
 	},
 	"shortcutKeysLink": {
-		"message": "The shortcuts can be modified here: "
+		"message": "The shortcuts can be modified like this: "
 	},	
+	"shortcutErrorLabel":{
+		"message": "(New shortcuts due to error)"
+	},
 	"iconColorTitle": {
 		"message": "Extension Icon"
 	},
