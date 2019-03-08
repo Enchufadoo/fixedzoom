@@ -375,14 +375,15 @@
                 browser.commands.onCommand.removeListener(handleCommandsListener);
             }
         } else {
-            browser.commands.onCommand.addListener(handleCommandsListener);
+            if(extSettings.enabled){
+                browser.commands.onCommand.addListener(handleCommandsListener);    
+            }            
         }
 
         if (browser.tabs.onUpdated.hasListener(tabUpdateListener)) {
             if (!extSettings.enabled) {
                 // actually remove the listener to remove any overhead
                 browser.tabs.onUpdated.removeListener(tabUpdateListener);
-
             }
         } else {
             if (extSettings.enabled) {
@@ -508,7 +509,7 @@
                 changeZoomInAllTabs();
             });
         }    
-    }
+    };
 
     /**
      * Handles zoom events to create new rules automatically
