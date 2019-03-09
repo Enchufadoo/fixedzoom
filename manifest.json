@@ -2,7 +2,7 @@
   "description": "Extension that sets a default fixed zoom for all pages in Firefox",
   "manifest_version": 2,
   "name": "Fixed Zoom",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "homepage_url": "https://github.com/Enchufadoo/fixedzoom",
   "icons": {
     "64": "icons/binoculars.png"
@@ -19,13 +19,13 @@
   "commands": {
     "more-fixedzoom": {
       "suggested_key": {
-        "default": "Ctrl+Period"
+        "default": "Alt+Period"
       },
       "description": "Increase the zoom level for fixed zoom"
     },
     "less-fixedzoom": {
       "suggested_key": {
-        "default": "Ctrl+Comma"
+        "default": "Alt+Comma"
       },
       "description": "Reduce the zoom level for fixed zoom"
     }
